@@ -2,15 +2,15 @@ import { GalleryVerticalEnd } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
-import LoginForm from '@/app/(auth)/login/login-form'
+import RegisterForm from '@/app/(auth)/auth/register/register-form'
 import PATH from '@/constants/path'
 
 export const metadata: Metadata = {
-  title: 'Đăng nhập - Nest Ecom.',
-  description: 'Đăng nhập vào tài khoản của bạn để trải nghiệm mua sắm tuyệt vời tại Nest Ecom.',
+  title: 'Đăng ký',
+  description: 'Tạo tài khoản mới để trải nghiệm mua sắm và trở thành một phần của cộng đồng Nest Ecom.',
 }
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -20,7 +20,7 @@ export default function LoginPage() {
           </div>
           Nest Ecom.
         </Link>
-        <LoginForm />
+        <RegisterForm />
       </div>
     </div>
   )

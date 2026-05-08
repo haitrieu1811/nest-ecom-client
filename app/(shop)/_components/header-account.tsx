@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -12,11 +13,23 @@ import {
 } from '@/components/ui/dropdown-menu'
 import PATH from '@/constants/path'
 import useLogout from '@/hooks/use-logout'
+import { normalizePath } from '@/lib/utils'
 import { useAppStore } from '@/providers/app.provider'
 
 export default function HeaderAccount() {
-  const { handleLogout } = useLogout()
+  const pathname = usePathname()
+  const router = useRouter()
   const { profile } = useAppStore()
+
+  const { handleLogout } = useLogout({
+    onSuccess: () => {
+      // Nếu đăng xuất lúc ở các trang private thì redirect về trang login sau khi logout thành công
+      if (normalizePath(pathname).startsWith(PATH.ACCOUNT)) {
+        router.push(PATH.LOGIN)
+      }
+    },
+  })
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

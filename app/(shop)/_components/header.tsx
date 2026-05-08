@@ -7,8 +7,8 @@ import React from 'react'
 import HeaderAccount from '@/app/(shop)/_components/header-account'
 import ModeToggle from '@/components/mode-toggle'
 import PATH from '@/constants/path'
-import { useAppStore } from '@/providers/app.provider'
 import useIsClient from '@/hooks/use-is-client'
+import { useAppStore } from '@/providers/app.provider'
 
 export default function ShopHeader() {
   const { isAuthenticated } = useAppStore()
