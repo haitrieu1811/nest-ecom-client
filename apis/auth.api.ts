@@ -1,6 +1,7 @@
 import http from '@/lib/http'
 
 import {
+  GetGoogleOAuthLinkResType,
   LoginBodyType,
   LoginResType,
   LogoutBodyType,
@@ -8,11 +9,12 @@ import {
   RegisterResType,
   SendOTPBodyType,
 } from '@/schemas/auth.schema'
-import { MessageResType } from '@/types/utils.type'
+import { MessageResType, ProfileInLSType } from '@/types/utils.type'
 
 export const REGISTER_API_ENDPOINT = 'api/auth/register'
 export const LOGOUT_API_ENDPOINT = 'api/auth/logout'
 export const LOGIN_API_ENDPOINT = 'api/auth/login'
+export const SET_TOKENS_API_ENDPOINT = 'api/auth/set-tokens'
 
 const authApi = {
   sRegister(body: RegisterBodyType) {
@@ -55,6 +57,16 @@ const authApi = {
         baseUrl: '',
       },
     )
+  },
+
+  getGoogleOauth2Url() {
+    return http.get<GetGoogleOAuthLinkResType>('auth/google-link')
+  },
+
+  setTokens(body: { accessToken: string; refreshToken: string; user: ProfileInLSType }) {
+    return http.post(SET_TOKENS_API_ENDPOINT, body, {
+      baseUrl: '',
+    })
   },
 } as const
 

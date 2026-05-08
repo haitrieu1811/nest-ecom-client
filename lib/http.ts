@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { LOGIN_API_ENDPOINT, LOGOUT_API_ENDPOINT, REGISTER_API_ENDPOINT } from '@/apis/auth.api'
+import {
+  LOGIN_API_ENDPOINT,
+  LOGOUT_API_ENDPOINT,
+  REGISTER_API_ENDPOINT,
+  SET_TOKENS_API_ENDPOINT,
+} from '@/apis/auth.api'
 import envConfig from '@/config'
 import {
   clearAuthFromLS,
@@ -123,7 +128,9 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
 
     // Lưu accessToken, refreshToken, profile vào localStorage nếu endpoint là register hoặc login
     if (
-      [REGISTER_API_ENDPOINT, LOGIN_API_ENDPOINT].map((endpoint) => normalizePath(endpoint)).includes(normalizedPath)
+      [REGISTER_API_ENDPOINT, LOGIN_API_ENDPOINT, SET_TOKENS_API_ENDPOINT]
+        .map((endpoint) => normalizePath(endpoint))
+        .includes(normalizedPath)
     ) {
       const { accessToken, refreshToken, user } = payload as LoginResType
       const decodedAccessToken = jwtDecoded<AccessTokenPayload>(accessToken)
