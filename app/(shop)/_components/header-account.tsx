@@ -12,17 +12,18 @@ import {
 } from '@/components/ui/dropdown-menu'
 import PATH from '@/constants/path'
 import useLogout from '@/hooks/use-logout'
+import { useAppStore } from '@/providers/app.provider'
 
 export default function HeaderAccount() {
   const { handleLogout } = useLogout()
-
+  const { profile } = useAppStore()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={profile?.avatar || ''} alt={profile?.name || 'User'} />
+            <AvatarFallback>{`${profile?.email?.[0].toLocaleUpperCase()}${profile?.email?.[1]?.toLocaleUpperCase() || ''}`}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

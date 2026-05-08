@@ -4,6 +4,7 @@ import authApi from '@/apis/auth.api'
 
 export async function POST() {
   const cookieStore = await cookies()
+  const accessToken = cookieStore.get('accessToken')?.value
   const refreshToken = cookieStore.get('refreshToken')?.value
   if (!refreshToken) {
     return Response.json(
@@ -15,8 +16,18 @@ export async function POST() {
       },
     )
   }
+  if (!accessToken) {
+    return Response.json(
+      {
+        message: 'Không tìm thấy access token !',
+      },
+      {
+        status: 401,
+      },
+    )
+  }
   try {
-    const res = await authApi.sLogout({ refreshToken })
+    const res = await authApi.sLogout({ refreshToken }, accessToken)
     cookieStore.delete('accessToken')
     cookieStore.delete('refreshToken')
     return Response.json(res.payload)
