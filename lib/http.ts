@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { REGISTER_API_ENDPOINT } from '@/apis/auth.api'
+import { LOGOUT_API_ENDPOINT, REGISTER_API_ENDPOINT } from '@/apis/auth.api'
 import envConfig from '@/config'
 import {
+  clearAuthFromLS,
   getAccessTokenFromLS,
   isBrowser,
   jwtDecoded,
@@ -13,7 +14,7 @@ import {
   setRefreshTokenExpiresAtToLS,
   setRefreshTokenToLS,
 } from '@/lib/utils'
-import { LoginResTyoe } from '@/schemas/auth.schema'
+import { LoginResType } from '@/schemas/auth.schema'
 import { AccessTokenPayload, RefreshTokenPayload } from '@/types/utils.type'
 
 const ENTITY_ERROR_STATUS = 422
@@ -118,9 +119,11 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
   }
   // Xử lý khi request thành công
   if (isBrowser) {
+    const normalizedPath = normalizePath(path)
+
     // Lưu accessToken, refreshToken, profile vào localStorage nếu endpoint là register
-    if ([REGISTER_API_ENDPOINT].map((endpoint) => normalizePath(endpoint)).includes(normalizePath(path))) {
-      const { accessToken, refreshToken, user } = payload as LoginResTyoe
+    if ([REGISTER_API_ENDPOINT].map((endpoint) => normalizePath(endpoint)).includes(normalizedPath)) {
+      const { accessToken, refreshToken, user } = payload as LoginResType
       const decodedAccessToken = jwtDecoded<AccessTokenPayload>(accessToken)
       const decodedRefreshToken = jwtDecoded<RefreshTokenPayload>(refreshToken)
       setAccessTokenToLS(accessToken)
@@ -128,6 +131,9 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
       setAccessTokenExpiresAtToLS(new Date(decodedAccessToken.exp * 1000).toISOString())
       setRefreshTokenExpiresAtToLS(new Date(decodedRefreshToken.exp * 1000).toISOString())
       setProfileToLS(user)
+    } else if (normalizedPath === LOGOUT_API_ENDPOINT) {
+      // Xóa accessToken, refreshToken, profile khỏi localStorage nếu endpoint là logout
+      clearAuthFromLS()
     }
   }
 

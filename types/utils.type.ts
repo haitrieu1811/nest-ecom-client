@@ -1,3 +1,5 @@
+import { LoginResType } from '@/schemas/auth.schema'
+
 export type MessageResType = {
   message: string
 }
@@ -21,3 +23,5 @@ export type RefreshTokenPayload = RefreshTokenPayloadInput & {
   iat: number
   exp: number
 }
+
+export type ProfileInLSType = LoginResType['user']

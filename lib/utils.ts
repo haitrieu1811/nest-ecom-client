@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { EntityError } from '@/lib/http'
 import { clsx, type ClassValue } from 'clsx'
 import jsonwebtoken, { DecodeOptions } from 'jsonwebtoken'
 import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
+
+import { EntityError } from '@/lib/http'
+import { ProfileInLSType } from '@/types/utils.type'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -23,7 +25,7 @@ export const getAccessTokenFromLS = () => (isBrowser ? localStorage.getItem('acc
 
 export const getRefreshTokenFromLS = () => (isBrowser ? localStorage.getItem('refreshToken') : null)
 
-export const getProfileFromLS = () => {
+export const getProfileFromLS = (): ProfileInLSType | null => {
   if (!isBrowser) return null
   const profile = localStorage.getItem('profile')
   return profile ? JSON.parse(profile) : null
@@ -41,7 +43,7 @@ export const setRefreshTokenToLS = (token: string) => {
   }
 }
 
-export const setProfileToLS = (profile: any) => {
+export const setProfileToLS = (profile: ProfileInLSType) => {
   if (isBrowser) {
     localStorage.setItem('profile', JSON.stringify(profile))
   }

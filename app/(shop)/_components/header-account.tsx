@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,9 +11,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import PATH from '@/constants/path'
-import Link from 'next/link'
+import useLogout from '@/hooks/use-logout'
 
 export default function HeaderAccount() {
+  const { handleLogout } = useLogout()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -32,7 +36,9 @@ export default function HeaderAccount() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive">Đăng xuất</DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+            Đăng xuất
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

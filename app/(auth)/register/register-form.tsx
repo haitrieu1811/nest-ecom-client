@@ -27,10 +27,13 @@ import { Spinner } from '@/components/ui/spinner'
 import { VERIFICATION_CODE_TYPE } from '@/constants/auth.constant'
 import PATH from '@/constants/path'
 import { cn, handleErrorFromAPI } from '@/lib/utils'
+import { useAppStore } from '@/providers/app.provider'
 import { RegisterBodySchema, RegisterBodyType } from '@/schemas/auth.schema'
 
 export default function RegisterForm({ className, ...props }: React.ComponentProps<'div'>) {
   const router = useRouter()
+
+  const { setIsAuthenticated, setProfile } = useAppStore()
 
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBodySchema),
@@ -60,9 +63,11 @@ export default function RegisterForm({ className, ...props }: React.ComponentPro
   const registerMutation = useMutation({
     mutationKey: ['register'],
     mutationFn: authApi.register,
-    onSuccess() {
+    onSuccess(data) {
       toast.success('Đăng ký thành công.')
       form.reset()
+      setIsAuthenticated(true)
+      setProfile(data.payload.user)
       router.push(PATH.ACCOUNT)
     },
     onError(error) {

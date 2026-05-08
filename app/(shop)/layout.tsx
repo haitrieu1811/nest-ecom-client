@@ -4,9 +4,11 @@ import ShopHeader from '@/app/(shop)/_components/header'
 
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div>
+    <React.Fragment>
       <ShopHeader />
-      {children}
-    </div>
+      <div>
+        <main className="w-7xl mx-auto">{children}</main>
+      </div>
+    </React.Fragment>
   )
 }

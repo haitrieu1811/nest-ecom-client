@@ -1,18 +1,35 @@
-import Link from 'next/link'
+'use client'
 
-import PATH from '@/constants/path'
-import ModeToggle from '@/components/mode-toggle'
+import { ShoppingBag } from 'lucide-react'
+import Link from 'next/link'
+import React from 'react'
+
 import HeaderAccount from '@/app/(shop)/_components/header-account'
+import ModeToggle from '@/components/mode-toggle'
+import PATH from '@/constants/path'
+import { useAppStore } from '@/providers/app.provider'
+import useIsClient from '@/hooks/use-is-client'
 
 export default function ShopHeader() {
+  const { isAuthenticated } = useAppStore()
+  const isClient = useIsClient()
   return (
-    <header className="flex justify-between items-center">
-      <h1>Shop Header</h1>
-      <div className="flex space-x-4">
-        <Link href={PATH.LOGIN}>Đăng nhập</Link>
-        <Link href={PATH.REGISTER}>Đăng ký</Link>
-        <HeaderAccount />
-        <ModeToggle />
+    <header className="border-b">
+      <div className="w-7xl h-14 mx-auto flex justify-between items-center">
+        <Link href={PATH.HOME} className="text-2xl font-bold flex items-center space-x-2">
+          <ShoppingBag />
+          <span>NestEcom</span>
+        </Link>
+        <div className="flex items-center space-x-4">
+          {!isAuthenticated && isClient && (
+            <React.Fragment>
+              <Link href={PATH.LOGIN}>Đăng nhập</Link>
+              <Link href={PATH.REGISTER}>Đăng ký</Link>
+            </React.Fragment>
+          )}
+          {isAuthenticated && isClient && <HeaderAccount />}
+          <ModeToggle />
+        </div>
       </div>
     </header>
   )
