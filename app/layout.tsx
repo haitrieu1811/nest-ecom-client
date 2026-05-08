@@ -1,36 +1,38 @@
-import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import type { Metadata } from 'next'
+import { Mona_Sans as FontSans } from 'next/font/google'
 
-import "./globals.css";
-import { cn } from "@/lib/utils";
+import { Toaster } from '@/components/ui/sonner'
+import { cn } from '@/lib/utils'
+import TanstackQueryProvider from '@/providers/tanstack-query.provider'
+import ThemeProvider from '@/providers/theme.provider'
+import './globals.css'
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+const fontSans = FontSans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
 
 export const metadata: Metadata = {
-  title: "Nest Ecom Trang Chủ",
+  title: 'Nest Ecom Trang Chủ',
   description:
-    "Trang chủ của Nest Ecom, nơi bạn có thể khám phá các sản phẩm và dịch vụ của chúng tôi. Chúng tôi cung cấp một loạt các sản phẩm chất lượng cao và dịch vụ tuyệt vời để đáp ứng nhu cầu của bạn. Hãy khám phá ngay hôm nay!",
-};
+    'Trang chủ của Nest Ecom, nơi bạn có thể khám phá các sản phẩm và dịch vụ của chúng tôi. Chúng tôi cung cấp một loạt các sản phẩm chất lượng cao và dịch vụ tuyệt vời để đáp ứng nhu cầu của bạn. Hãy khám phá ngay hôm nay!',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      className={cn(
-        "h-full",
-        "antialiased",
-        "font-sans",
-        spaceGrotesk.variable,
-      )}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" suppressHydrationWarning className={cn('h-full', 'antialiased', 'font-sans', fontSans.variable)}>
+      <body>
+        <TanstackQueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {children}
+            <Toaster richColors position="top-center" />
+          </ThemeProvider>
+        </TanstackQueryProvider>
+      </body>
     </html>
-  );
+  )
 }

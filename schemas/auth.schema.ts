@@ -1,0 +1,192 @@
+import z from 'zod'
+
+import { VERIFICATION_CODE_TYPE } from '@/constants/auth.constant'
+import { emailSchema, UserIncludeRolePermissionsSchema, UserSchema } from '@/schemas/user.schema'
+
+const otpCodeSchema = z.string('OTP code là bắt buộc.').length(6, 'OTP code phải có độ dài 6 ký tự.')
+const totpCodeSchema = z.string('TOTP code là bắt buộc.').length(6, 'TOTP code phải có độ dài 6 ký tự.')
+const confirmPasswordSchema = z.string('Nhập lại mật khẩu là bắt buộc.')
+
+export const TokensResSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+})
+
+export const DeviceSchema = z
+  .object({
+    id: z.int().positive(),
+    userId: z.int().positive(),
+    userAgent: z.string(),
+    ip: z.string(),
+    isActive: z.boolean().default(true),
+    lastActive: z.iso.datetime(),
+    createdAt: z.iso.datetime(),
+  })
+  .strict()
+
+export const RegisterBodySchema = UserSchema.pick({
+  email: true,
+  password: true,
+  roleId: true,
+})
+  .extend({
+    confirmPassword: confirmPasswordSchema,
+    code: otpCodeSchema,
+  })
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword) {
+      ctx.addIssue({
+        message: 'Nhập lại mật khẩu không chính xác.',
+        code: 'custom',
+        path: ['confirmPassword'],
+      })
+    }
+  })
+  .strict()
+
+export const RegisterResSchema = TokensResSchema.extend({
+  user: UserSchema.omit({
+    password: true,
+    totpSecret: true,
+  }),
+})
+
+export const VerificationCodeSchema = z
+  .object({
+    id: z.int(),
+    email: emailSchema,
+    code: otpCodeSchema,
+    type: z.enum(
+      [
+        VERIFICATION_CODE_TYPE.REGISTER,
+        VERIFICATION_CODE_TYPE.FORGOT_PASSWORD,
+        VERIFICATION_CODE_TYPE.LOGIN,
+        VERIFICATION_CODE_TYPE.DISABLE_2FA,
+      ],
+      'Verification code type không hợp lệ.',
+    ),
+    expiresAt: z.iso.datetime(),
+    createdAt: z.iso.datetime(),
+  })
+  .strict()
+
+export const SendOTPBodySchema = VerificationCodeSchema.pick({
+  email: true,
+  type: true,
+}).strict()
+
+export const LoginBodySchema = UserSchema.pick({
+  email: true,
+  password: true,
+})
+  .extend({
+    code: otpCodeSchema.optional(), // OTP gửi qua email
+    totpCode: totpCodeSchema.optional(), // Mã 2FA
+  })
+  .strict()
+  .superRefine(({ totpCode, code }, ctx) => {
+    // Không được truyền một lúc cả hai
+    const message = 'Error.OnlyOneMethodCanBeSent'
+    if (totpCode !== undefined && code !== undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['totpCode'],
+        message,
+      })
+      ctx.addIssue({
+        code: 'custom',
+        path: ['code'],
+        message,
+      })
+    }
+  })
+
+export const LoginResSchema = RegisterResSchema
+
+export const RefreshTokenBodySchema = z
+  .object({
+    refreshToken: z.string('Refresh token là bắt buộc.'),
+  })
+  .strict()
+
+export const LogoutBodySchema = RefreshTokenBodySchema.pick({
+  refreshToken: true,
+})
+
+export const GoogleOAuthLinkStateSchema = DeviceSchema.pick({
+  userAgent: true,
+  ip: true,
+})
+
+export const GetGoogleOAuthLinkResSchema = z.object({
+  url: z.url(),
+})
+
+export const ResetPasswordBodySchema = UserSchema.pick({
+  email: true,
+  password: true,
+})
+  .extend({
+    confirmPassword: confirmPasswordSchema,
+    code: otpCodeSchema,
+  })
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Nhập lại mật khẩu không chính xác.',
+        path: ['confirmPassword'],
+      })
+    }
+  })
+  .strict()
+
+export const ResetPasswordResSchema = TokensResSchema.extend({
+  user: UserIncludeRolePermissionsSchema,
+})
+
+export const Enable2FAResSchema = z.object({
+  secret: z.string(),
+  uri: z.url(),
+})
+
+export const Disable2FABodySchema = z
+  .object({
+    totpCode: totpCodeSchema.optional(),
+    code: otpCodeSchema.optional(),
+  })
+  .strict()
+  .superRefine(({ totpCode, code }, ctx) => {
+    const message = 'Error.OnlyOneMethodCanBeSent'
+    // Chỉ được truyền một trong hai
+    if ((totpCode !== undefined) === (code !== undefined)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['totpCode'],
+        message,
+      })
+      ctx.addIssue({
+        code: 'custom',
+        path: ['code'],
+        message,
+      })
+    }
+  })
+
+export type DeviceType = z.infer<typeof DeviceSchema>
+export type RegisterBodyType = z.infer<typeof RegisterBodySchema>
+export type RegisterResType = z.infer<typeof RegisterResSchema>
+export type VerificationCode = z.infer<typeof VerificationCodeSchema>
+export type SendOTPBodyType = z.infer<typeof SendOTPBodySchema>
+export type LoginBodyType = z.infer<typeof LoginBodySchema>
+export type LoginResTyoe = z.infer<typeof LoginResSchema>
+export type RefreshTokenBodyType = z.infer<typeof RefreshTokenBodySchema>
+export type RefreshTokenResType = z.infer<typeof TokensResSchema>
+export type TokensResType = z.infer<typeof TokensResSchema>
+export type LogoutBodyType = z.infer<typeof LogoutBodySchema>
+export type GoogleOAuthLinkStateType = z.infer<typeof GoogleOAuthLinkStateSchema>
+export type GetGoogleOAuthLinkResType = z.infer<typeof GetGoogleOAuthLinkResSchema>
+export type ResetPasswordBodyType = z.infer<typeof ResetPasswordBodySchema>
+export type ResetPasswordResType = z.infer<typeof ResetPasswordResSchema>
+export type Enable2FAResType = z.infer<typeof Enable2FAResSchema>
+export type Disable2FABodyType = z.infer<typeof Disable2FABodySchema>
