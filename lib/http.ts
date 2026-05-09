@@ -6,6 +6,7 @@ import {
   REGISTER_API_ENDPOINT,
   SET_TOKENS_API_ENDPOINT,
 } from '@/apis/auth.api'
+import { UPDATE_PROFILE_API_ENDPOINT } from '@/apis/profile.api'
 import envConfig from '@/config'
 import {
   clearAuthFromLS,
@@ -20,6 +21,7 @@ import {
   setRefreshTokenToLS,
 } from '@/lib/utils'
 import { LoginResType } from '@/schemas/auth.schema'
+import { UpdateProfileResType } from '@/schemas/profile.schema'
 import { AccessTokenPayload, RefreshTokenPayload } from '@/types/utils.type'
 
 const ENTITY_ERROR_STATUS = 422
@@ -125,7 +127,6 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
   // Xử lý khi request thành công
   if (isBrowser) {
     const normalizedPath = normalizePath(path)
-
     // Lưu accessToken, refreshToken, profile vào localStorage nếu endpoint là register hoặc login
     if (
       [REGISTER_API_ENDPOINT, LOGIN_API_ENDPOINT, SET_TOKENS_API_ENDPOINT]
@@ -139,6 +140,9 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
       setRefreshTokenToLS(refreshToken)
       setAccessTokenExpiresAtToLS(new Date(decodedAccessToken.exp * 1000).toISOString())
       setRefreshTokenExpiresAtToLS(new Date(decodedRefreshToken.exp * 1000).toISOString())
+      setProfileToLS(user)
+    } else if (normalizedPath === UPDATE_PROFILE_API_ENDPOINT && method === 'PUT') {
+      const user = payload as UpdateProfileResType
       setProfileToLS(user)
     } else if (normalizedPath === LOGOUT_API_ENDPOINT) {
       // Xóa accessToken, refreshToken, profile khỏi localStorage nếu endpoint là logout
