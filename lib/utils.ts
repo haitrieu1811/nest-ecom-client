@@ -6,7 +6,8 @@ import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 
 import { EntityError } from '@/lib/http'
-import { ProfileInLSType } from '@/types/utils.type'
+import { AccessTokenPayload, ProfileInLSType, RefreshTokenPayload } from '@/types/utils.type'
+import authApi from '@/apis/auth.api'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -95,4 +96,55 @@ export const handleErrorFromAPI = ({ error, setError }: { error: any; setError?:
 export const jwtDecoded = <TokenPayload>(token: string, options?: DecodeOptions & { complete: true }) => {
   const decoded = jsonwebtoken.decode(token, options) as TokenPayload
   return decoded
+}
+
+export const handleCheckAndRefreshToken = async ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: () => void
+  onError?: () => void
+} = {}) => {
+  const accessToken = getAccessTokenFromLS()
+  const refreshToken = getRefreshTokenFromLS()
+
+  // Nếu chưa đăng nhập thì không cần refresh token
+  if (!accessToken || !refreshToken) return
+
+  const decodedAccessToken = jwtDecoded<AccessTokenPayload>(accessToken)
+  const decodedRefreshToken = jwtDecoded<RefreshTokenPayload>(refreshToken)
+
+  /**
+   * Thời điểm hết hạn của access token và refresh token được tính bằng epoch time (s)
+   * còn khi sử dụng cú pháp new Date().getTime() thì sẽ trả về epoch time (ms) nên cần phải chia cho 1000 để có thể so sánh được
+   */
+  const now = new Date().getTime() / 1000
+
+  // Nếu refresh token hết hạn thì không cần refresh token nữa
+  if (decodedRefreshToken.exp <= now) return
+
+  /**
+   * Ví dụ nếu access token có thời hạn 10 giây
+   * thì sẽ kiểm tra 1/3 thời gian còn lại của access token, tức là 3.33 giây trước khi access token hết hạn thì sẽ thực hiện refresh token
+   *
+   * Thời gian còn lại của access token được tính theo công thức: decodedAccessToken.exp - now
+   * Thời gian hết hạn của access token được tính theo công thức: decodedAccessToken.exp - decodedAccessToken.iat
+   */
+  const shouldRefreshToken = decodedAccessToken.exp - now <= (decodedAccessToken.exp - decodedAccessToken.iat) / 3
+  if (shouldRefreshToken) {
+    try {
+      const res = await authApi.refreshToken()
+      setAccessTokenToLS(res.payload.accessToken)
+      setRefreshTokenToLS(res.payload.refreshToken)
+      setAccessTokenExpiresAtToLS(
+        new Date(jwtDecoded<AccessTokenPayload>(res.payload.accessToken).exp * 1000).toISOString(),
+      )
+      setRefreshTokenExpiresAtToLS(
+        new Date(jwtDecoded<RefreshTokenPayload>(res.payload.refreshToken).exp * 1000).toISOString(),
+      )
+      onSuccess?.()
+    } catch {
+      onError?.()
+    }
+  }
 }

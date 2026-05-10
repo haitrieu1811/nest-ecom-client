@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Arimo as FontSans } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
 
+import RefreshToken from '@/components/refresh-token'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/lib/utils'
 import TanstackQueryProvider from '@/providers/tanstack-query.provider'
@@ -31,6 +32,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <NextTopLoader shadow={false} showSpinner={false} color="var(--primary)" />
             {children}
+            <RefreshToken />
             <Toaster richColors position="top-center" />
           </ThemeProvider>
         </TanstackQueryProvider>

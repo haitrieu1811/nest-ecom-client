@@ -5,6 +5,8 @@ import {
   LoginBodyType,
   LoginResType,
   LogoutBodyType,
+  RefreshTokenBodyType,
+  RefreshTokenResType,
   RegisterBodyType,
   RegisterResType,
   ResetPasswordBodyType,
@@ -20,6 +22,11 @@ export const SET_TOKENS_API_ENDPOINT = 'api/auth/set-tokens'
 export const RESET_PASSWORD_API_ENDPOINT = 'auth/reset-password'
 
 const authApi = {
+  refreshTokenRequest: null as Promise<{
+    status: number
+    payload: RefreshTokenResType
+  }> | null,
+
   sRegister(body: RegisterBodyType) {
     return http.post<RegisterResType>('auth/register', body)
   },
@@ -75,6 +82,24 @@ const authApi = {
   resetPassword(body: ResetPasswordBodyType) {
     return http.post<ResetPasswordResType>(RESET_PASSWORD_API_ENDPOINT, body)
   },
-} as const
+
+  sRefreshToken(body: RefreshTokenBodyType) {
+    return http.post<RefreshTokenResType>('auth/refresh-token', {
+      refreshToken: body.refreshToken,
+    })
+  },
+
+  async refreshToken() {
+    if (this.refreshTokenRequest) {
+      return this.refreshTokenRequest
+    }
+    this.refreshTokenRequest = http.post<RefreshTokenResType>('api/auth/refresh-token', null, {
+      baseUrl: '',
+    })
+    const result = await this.refreshTokenRequest
+    this.refreshTokenRequest = null
+    return result
+  },
+}
 
 export default authApi

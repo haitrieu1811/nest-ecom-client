@@ -26,7 +26,7 @@ import { UpdateProfileResType } from '@/schemas/profile.schema'
 import { AccessTokenPayload, RefreshTokenPayload } from '@/types/utils.type'
 
 const ENTITY_ERROR_STATUS = 422
-// const UNAUTHORIZED_ERROR_STATUS = 401
+const UNAUTHORIZED_ERROR_STATUS = 401
 
 type CustomOptions = Omit<RequestInit, 'method'> & {
   baseUrl?: string
@@ -70,6 +70,8 @@ export class EntityError extends HttpError {
     this.payload = payload
   }
 }
+
+let clientLogoutRequest: null | Promise<any> = null
 
 const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 'DELETE', options?: CustomOptions) => {
   // Nếu truyền baseUrl là "" thì sẽ gọi đến Next.js API route, nếu không truyền baseUrl thì sẽ gọi đến API server
@@ -123,6 +125,25 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
           payload: EntityErrorPayload
         },
       )
+    }
+    // Khi gặp lỗi 401 thì lập tức cho đăng xuất
+    else if (res.status === UNAUTHORIZED_ERROR_STATUS) {
+      if (isBrowser) {
+        if (!clientLogoutRequest) {
+          clientLogoutRequest = fetch(LOGOUT_API_ENDPOINT, {
+            method: 'POST',
+            body: null,
+            headers: {
+              ...baseHeaders,
+            },
+          })
+        }
+        try {
+          await clientLogoutRequest
+        } finally {
+          clientLogoutRequest = null
+        }
+      }
     }
   }
   // Xử lý khi request thành công
