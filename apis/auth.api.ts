@@ -7,6 +7,8 @@ import {
   LogoutBodyType,
   RegisterBodyType,
   RegisterResType,
+  ResetPasswordBodyType,
+  ResetPasswordResType,
   SendOTPBodyType,
 } from '@/schemas/auth.schema'
 import { MessageResType, ProfileInLSType } from '@/types/utils.type'
@@ -15,6 +17,7 @@ export const REGISTER_API_ENDPOINT = 'api/auth/register'
 export const LOGOUT_API_ENDPOINT = 'api/auth/logout'
 export const LOGIN_API_ENDPOINT = 'api/auth/login'
 export const SET_TOKENS_API_ENDPOINT = 'api/auth/set-tokens'
+export const RESET_PASSWORD_API_ENDPOINT = 'auth/reset-password'
 
 const authApi = {
   sRegister(body: RegisterBodyType) {
@@ -67,6 +70,10 @@ const authApi = {
     return http.post(SET_TOKENS_API_ENDPOINT, body, {
       baseUrl: '',
     })
+  },
+
+  resetPassword(body: ResetPasswordBodyType) {
+    return http.post<ResetPasswordResType>(RESET_PASSWORD_API_ENDPOINT, body)
   },
 } as const
 

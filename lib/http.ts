@@ -4,6 +4,7 @@ import {
   LOGIN_API_ENDPOINT,
   LOGOUT_API_ENDPOINT,
   REGISTER_API_ENDPOINT,
+  RESET_PASSWORD_API_ENDPOINT,
   SET_TOKENS_API_ENDPOINT,
 } from '@/apis/auth.api'
 import { UPDATE_PROFILE_API_ENDPOINT } from '@/apis/profile.api'
@@ -129,7 +130,7 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
     const normalizedPath = normalizePath(path)
     // Lưu accessToken, refreshToken, profile vào localStorage nếu endpoint là register hoặc login
     if (
-      [REGISTER_API_ENDPOINT, LOGIN_API_ENDPOINT, SET_TOKENS_API_ENDPOINT]
+      [REGISTER_API_ENDPOINT, LOGIN_API_ENDPOINT, SET_TOKENS_API_ENDPOINT, RESET_PASSWORD_API_ENDPOINT]
         .map((endpoint) => normalizePath(endpoint))
         .includes(normalizedPath)
     ) {

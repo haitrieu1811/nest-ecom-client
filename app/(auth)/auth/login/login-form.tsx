@@ -106,9 +106,9 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
                   <Field data-invalid={fieldState.invalid}>
                     <div className="flex items-center">
                       <FieldLabel htmlFor="password">Mật khẩu</FieldLabel>
-                      <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
+                      <Link href={PATH.RESET_PASSWORD} className="ml-auto text-sm underline-offset-4 hover:underline">
                         Quên mật khẩu?
-                      </a>
+                      </Link>
                     </div>
                     <Input
                       {...field}

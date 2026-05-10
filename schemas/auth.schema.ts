@@ -1,7 +1,7 @@
 import z from 'zod'
 
 import { VERIFICATION_CODE_TYPE } from '@/constants/auth.constant'
-import { emailSchema, UserIncludeRolePermissionsSchema, UserSchema } from '@/schemas/user.schema'
+import { emailSchema, UserSchema } from '@/schemas/user.schema'
 
 const otpCodeSchema = z.string('OTP code là bắt buộc.').length(6, 'OTP code phải có độ dài 6 ký tự.')
 const totpCodeSchema = z.string('TOTP code là bắt buộc.').length(6, 'TOTP code phải có độ dài 6 ký tự.')
@@ -142,7 +142,10 @@ export const ResetPasswordBodySchema = UserSchema.pick({
   .strict()
 
 export const ResetPasswordResSchema = TokensResSchema.extend({
-  user: UserIncludeRolePermissionsSchema,
+  user: UserSchema.omit({
+    password: true,
+    totpSecret: true,
+  }),
 })
 
 export const Enable2FAResSchema = z.object({
