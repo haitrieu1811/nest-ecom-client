@@ -43,6 +43,16 @@ export default function AccountForm() {
     },
   })
 
+  React.useEffect(() => {
+    if (profile) {
+      form.setValues({
+        name: profile.name,
+        phoneNumber: profile.phoneNumber,
+        avatar: profile.avatar,
+      })
+    }
+  }, [profile, form])
+
   const updateProfileMutation = useMutation({
     mutationKey: ['update-profile'],
     mutationFn: profileApi.updateProfile,

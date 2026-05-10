@@ -39,7 +39,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
       setProfile(res.payload.user)
       form.reset()
       toast.success('Đăng nhập thành công!')
-      router.push(PATH.ACCOUNT)
+      router.push(PATH.HOME)
     },
     onError: (error) => {
       handleErrorFromAPI({

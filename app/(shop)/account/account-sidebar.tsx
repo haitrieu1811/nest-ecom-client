@@ -54,7 +54,7 @@ export default function AccountSidebar() {
       </div>
       <div className="mt-8">
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname === `/${item.href}`
+          const isActive = pathname === item.href
           return (
             <Button
               key={item.href}

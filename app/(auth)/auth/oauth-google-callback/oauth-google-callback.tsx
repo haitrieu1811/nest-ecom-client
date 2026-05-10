@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import React from 'react'
 
 import authApi from '@/apis/auth.api'
@@ -9,7 +9,6 @@ import { useAppStore } from '@/providers/app.provider'
 import { ProfileInLSType } from '@/types/utils.type'
 
 export default function OauthGoogleCallback() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const { setProfile, setIsAuthenticated } = useAppStore()
 
@@ -23,10 +22,10 @@ export default function OauthGoogleCallback() {
         await authApi.setTokens({ accessToken, refreshToken, user })
         setProfile(user)
         setIsAuthenticated(true)
-        router.push(PATH.ACCOUNT)
+        window.location.href = PATH.HOME
       }
     })()
-  }, [accessToken, refreshToken, user, router, setProfile, setIsAuthenticated])
+  }, [accessToken, refreshToken, user, setProfile, setIsAuthenticated])
 
   return <React.Fragment></React.Fragment>
 }
