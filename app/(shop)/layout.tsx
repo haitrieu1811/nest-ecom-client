@@ -1,14 +1,16 @@
 import React from 'react'
 
-import ShopHeader from '@/app/(shop)/_components/header'
+import Header from '@/app/(shop)/_components/header'
+import Footer from '@/app/(shop)/_components/footer'
 
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
   return (
     <React.Fragment>
-      <ShopHeader />
+      <Header />
       <div>
         <main className="w-7xl mx-auto">{children}</main>
       </div>
+      <Footer />
     </React.Fragment>
   )
 }

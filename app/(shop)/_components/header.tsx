@@ -10,7 +10,7 @@ import PATH from '@/constants/path'
 import useIsClient from '@/hooks/use-is-client'
 import { useAppStore } from '@/providers/app.provider'
 
-export default function ShopHeader() {
+export default function Header() {
   const { isAuthenticated } = useAppStore()
   const isClient = useIsClient()
   return (
