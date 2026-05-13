@@ -3,7 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -14,14 +15,25 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSepar
 import { Input } from '@/components/ui/input'
 import { Spinner } from '@/components/ui/spinner'
 import PATH from '@/constants/path'
-import { cn, handleErrorFromAPI } from '@/lib/utils'
+import { clearAuthFromLS, cn, handleErrorFromAPI } from '@/lib/utils'
 import { useAppStore } from '@/providers/app.provider'
 import { LoginBodySchema, LoginBodyType } from '@/schemas/auth.schema'
 
 export default function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const router = useRouter()
 
+  const searchParams = useSearchParams()
+  const clearTokens = searchParams.get('clearTokens')
+
   const { setIsAuthenticated, setProfile } = useAppStore()
+
+  // Trường hợp lâu ngày không đăng nhập rồi truy cập vào trang private thì sẽ bị proxy redirect về trang login với query clearTokens=true để xóa tokens trong localStorage và state
+  React.useEffect(() => {
+    if (clearTokens !== 'true') return
+    clearAuthFromLS()
+    setIsAuthenticated(false)
+    setProfile(null)
+  }, [clearTokens, setIsAuthenticated, setProfile])
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBodySchema),

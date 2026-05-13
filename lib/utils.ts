@@ -50,35 +50,11 @@ export const setProfileToLS = (profile: ProfileInLSType) => {
   }
 }
 
-export const setAccessTokenExpiresAtToLS = (expiresAt: string) => {
-  if (isBrowser) {
-    localStorage.setItem('accessTokenExpiresAt', expiresAt)
-  }
-}
-
-export const getAccessTokenExpiresAtFromLS = () => {
-  if (!isBrowser) return null
-  return localStorage.getItem('accessTokenExpiresAt')
-}
-
-export const setRefreshTokenExpiresAtToLS = (expiresAt: string) => {
-  if (isBrowser) {
-    localStorage.setItem('refreshTokenExpiresAt', expiresAt)
-  }
-}
-
-export const getRefreshTokenExpiresAtFromLS = () => {
-  if (!isBrowser) return null
-  return localStorage.getItem('refreshTokenExpiresAt')
-}
-
 export const clearAuthFromLS = () => {
   if (isBrowser) {
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('profile')
-    localStorage.removeItem('accessTokenExpiresAt')
-    localStorage.removeItem('refreshTokenExpiresAt')
   }
 }
 
@@ -118,10 +94,14 @@ export const handleCheckAndRefreshToken = async ({
    * Thời điểm hết hạn của access token và refresh token được tính bằng epoch time (s)
    * còn khi sử dụng cú pháp new Date().getTime() thì sẽ trả về epoch time (ms) nên cần phải chia cho 1000 để có thể so sánh được
    */
-  const now = new Date().getTime() / 1000
+  const now = new Date().getTime() / 1000 - 1
 
-  // Nếu refresh token hết hạn thì không cần refresh token nữa
-  if (decodedRefreshToken.exp <= now) return
+  // Nếu refresh token hết hạn thì không cần refresh token nữa mà cho logout luôn
+  if (decodedRefreshToken.exp <= now) {
+    clearAuthFromLS()
+    onError?.()
+    return
+  }
 
   /**
    * Ví dụ nếu access token có thời hạn 10 giây
@@ -136,14 +116,9 @@ export const handleCheckAndRefreshToken = async ({
       const res = await authApi.refreshToken()
       setAccessTokenToLS(res.payload.accessToken)
       setRefreshTokenToLS(res.payload.refreshToken)
-      setAccessTokenExpiresAtToLS(
-        new Date(jwtDecoded<AccessTokenPayload>(res.payload.accessToken).exp * 1000).toISOString(),
-      )
-      setRefreshTokenExpiresAtToLS(
-        new Date(jwtDecoded<RefreshTokenPayload>(res.payload.refreshToken).exp * 1000).toISOString(),
-      )
       onSuccess?.()
     } catch {
+      clearAuthFromLS()
       onError?.()
     }
   }

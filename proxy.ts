@@ -17,10 +17,12 @@ export function proxy(request: NextRequest) {
 
   // Chưa đăng nhập thi không cho vào trang private
   if (!refreshToken && PRIVATE_PATHS.some((path) => pathname.startsWith(path))) {
-    return NextResponse.redirect(new URL(PATH.LOGIN, request.url))
+    const url = new URL(PATH.LOGIN, request.url)
+    url.searchParams.set('clearTokens', 'true')
+    return NextResponse.redirect(url)
   }
 
-  // Đăng nhập rồi thì không cho vào các trang auth nữa
+  // Đăng nhập rồi thì không cho vào các trang auth nữa ngoại trừ trang refreshToken và logout
   if (
     refreshToken &&
     AUTH_PATHS.some(
@@ -32,7 +34,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(PATH.HOME, request.url))
   }
 
-  // Trường hơp hết hạn accessToken nhưng refreshToken vẫn còn hạn mà truy cập vào trang private
+  // Trường hơp hết hạn accessToken nhưng refreshToken vẫn còn hạn mà truy cập vào trang private -> redirect về trang refreshToken để lấy accessToken mới
   if (refreshToken && !accessToken && PRIVATE_PATHS.some((path) => pathname.startsWith(path))) {
     const url = new URL(PATH.REFRESH_TOKEN, request.url)
     url.searchParams.set('refreshToken', refreshToken)

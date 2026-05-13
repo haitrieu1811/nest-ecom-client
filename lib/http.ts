@@ -13,17 +13,13 @@ import {
   clearAuthFromLS,
   getAccessTokenFromLS,
   isBrowser,
-  jwtDecoded,
   normalizePath,
-  setAccessTokenExpiresAtToLS,
   setAccessTokenToLS,
   setProfileToLS,
-  setRefreshTokenExpiresAtToLS,
   setRefreshTokenToLS,
 } from '@/lib/utils'
 import { LoginResType } from '@/schemas/auth.schema'
 import { UpdateProfileResType } from '@/schemas/profile.schema'
-import { AccessTokenPayload, RefreshTokenPayload } from '@/types/utils.type'
 
 const ENTITY_ERROR_STATUS = 422
 const UNAUTHORIZED_ERROR_STATUS = 401
@@ -156,12 +152,8 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
         .includes(normalizedPath)
     ) {
       const { accessToken, refreshToken, user } = payload as LoginResType
-      const decodedAccessToken = jwtDecoded<AccessTokenPayload>(accessToken)
-      const decodedRefreshToken = jwtDecoded<RefreshTokenPayload>(refreshToken)
       setAccessTokenToLS(accessToken)
       setRefreshTokenToLS(refreshToken)
-      setAccessTokenExpiresAtToLS(new Date(decodedAccessToken.exp * 1000).toISOString())
-      setRefreshTokenExpiresAtToLS(new Date(decodedRefreshToken.exp * 1000).toISOString())
       setProfileToLS(user)
     } else if (normalizedPath === UPDATE_PROFILE_API_ENDPOINT && method === 'PUT') {
       const user = payload as UpdateProfileResType
