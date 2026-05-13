@@ -10,6 +10,12 @@ const PATH = {
   ACCOUNT_ADDRESSES: '/account/addresses',
   ACCOUNT_CHANGE_PASSWORD: '/account/change-password',
   ACCOUNT_SETTINGS: '/account/settings',
+  DASHBOARD: '/dashboard',
+  DASHBOARD_PROFILE: '/dashboard/profile',
+  DASHBOARD_ORDERS: '/dashboard/orders',
+  DASHBOARD_SETTINGS: '/dashboard/settings',
+  DASHBOARD_PRODUCTS: '/dashboard/products',
+  DASHBOARD_PRODUCTS_NEW: '/dashboard/products/new',
 } as const
 
 export default PATH

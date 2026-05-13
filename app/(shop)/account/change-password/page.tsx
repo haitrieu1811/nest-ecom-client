@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 
-import ChangePasswordForm from '@/app/(shop)/account/change-password/change-password-form'
+import ChangePasswordForm from '@/components/change-password-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {

@@ -4,6 +4,7 @@ import NextTopLoader from 'nextjs-toploader'
 
 import RefreshToken from '@/components/refresh-token'
 import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import TanstackQueryProvider from '@/providers/tanstack-query.provider'
 import ThemeProvider from '@/providers/theme.provider'
@@ -31,10 +32,12 @@ export default function RootLayout({
       <body>
         <TanstackQueryProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <NextTopLoader shadow={false} showSpinner={false} color="var(--primary)" />
-            {children}
-            <RefreshToken />
-            <Toaster richColors position="top-center" />
+            <TooltipProvider>
+              <NextTopLoader shadow={false} showSpinner={false} color="var(--primary)" />
+              {children}
+              <RefreshToken />
+              <Toaster richColors position="top-center" />
+            </TooltipProvider>
           </ThemeProvider>
         </TanstackQueryProvider>
       </body>

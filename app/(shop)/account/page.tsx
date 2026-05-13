@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 
-import AccountForm from '@/app/(shop)/account/account-form'
+import AccountForm from '@/components/account-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {

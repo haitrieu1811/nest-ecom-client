@@ -20,7 +20,7 @@ export default function RefreshToken() {
     // Không cần refresh token nếu đang ở các trang không yêu cầu xác thực
     if (UNAUTHORIZED_PATHS.includes(pathname)) return
 
-    const TIME_OUT_TO_REFRESH_TOKEN = 1000 // 1 giây
+    const TIME_OUT_TO_REFRESH_TOKEN = 1000 * 60 * 5 // 5 phút
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let interval: any = null
