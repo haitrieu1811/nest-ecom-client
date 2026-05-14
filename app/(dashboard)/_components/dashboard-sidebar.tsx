@@ -1,6 +1,6 @@
 'use client'
 
-import { BookTextIcon, ShoppingBagIcon, ShoppingBasketIcon } from 'lucide-react'
+import { BookTextIcon, HomeIcon, ShoppingBagIcon, ShoppingBasketIcon } from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
 
@@ -20,6 +20,11 @@ import { useAppStore } from '@/providers/app.provider'
 
 const data = {
   navMain: [
+    {
+      title: 'Về trang cửa hàng',
+      url: PATH.HOME,
+      icon: HomeIcon,
+    },
     {
       title: 'Đơn hàng',
       url: PATH.DASHBOARD_ORDERS,

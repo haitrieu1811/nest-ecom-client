@@ -20,4 +20,13 @@ export const HTTP_METHOD = {
   HEAD: 'HEAD',
 } as const
 
+export const ROLE_NAME = {
+  ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
+  SELLER: 'SELLER',
+  CLIENT: 'CLIENT',
+} as const
+
+export type RoleNameType = keyof typeof ROLE_NAME
+
 export type HttpMethodType = keyof typeof HTTP_METHOD

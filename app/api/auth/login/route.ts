@@ -28,6 +28,13 @@ export async function POST(request: Request) {
       secure: true,
       expires: decodedRefreshToken.exp * 1000,
     })
+    cookieStore.set('roleName', res.payload.user.role.name, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
+      expires: decodedRefreshToken.exp * 1000,
+    })
     return Response.json(res.payload)
   } catch (error) {
     if (error instanceof HttpError) {
