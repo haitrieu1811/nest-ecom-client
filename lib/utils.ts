@@ -5,9 +5,10 @@ import jsonwebtoken, { DecodeOptions } from 'jsonwebtoken'
 import { UseFormSetError } from 'react-hook-form'
 import { twMerge } from 'tailwind-merge'
 
-import { EntityError } from '@/lib/http'
+import { EntityError, HttpError } from '@/lib/http'
 import { AccessTokenPayload, ProfileInLSType, RefreshTokenPayload } from '@/types/utils.type'
 import authApi from '@/apis/auth.api'
+import { toast } from 'sonner'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -66,6 +67,8 @@ export const handleErrorFromAPI = ({ error, setError }: { error: any; setError?:
         message: msg.message,
       })
     })
+  } else if (error instanceof HttpError) {
+    toast.error(error.payload.message || 'Có lỗi xảy ra!')
   }
 }
 

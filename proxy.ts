@@ -1,12 +1,19 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-import PATH from '@/constants/path'
 import { ROLE_NAME } from '@/constants/auth.constant'
+import PATH from '@/constants/path'
 
 const AUTH_PATHS = ['/auth']
 const PRIVATE_PATHS = ['/account']
-const DASHBOARD_PATHS = ['/dashboard']
+const DASHBOARD_PATHS = [PATH.DASHBOARD]
+const ADMIN_MANAGER_ONLY_PATHS = [
+  PATH.DASHBOARD_USERS,
+  PATH.DASHBOARD_ROLES,
+  PATH.DASHBOARD_PERMISSIONS,
+  PATH.DASHBOARD_CATEGORIES,
+  PATH.DASHBOARD_BRANDS,
+]
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -15,8 +22,8 @@ export function proxy(request: NextRequest) {
   const refreshToken = request.cookies.get('refreshToken')?.value
   const roleName = request.cookies.get('roleName')?.value
 
-  // Chưa đăng nhập thi không cho vào trang private
-  if (!refreshToken && PRIVATE_PATHS.some((path) => pathname.startsWith(path))) {
+  // Chưa đăng nhập thi không cho vào trang private, dashboard
+  if (!refreshToken && [...PRIVATE_PATHS, ...DASHBOARD_PATHS].some((path) => pathname.startsWith(path))) {
     const url = new URL(PATH.LOGIN, request.url)
     url.searchParams.set('clearTokens', 'true')
     return NextResponse.redirect(url)
@@ -35,7 +42,11 @@ export function proxy(request: NextRequest) {
   }
 
   // Trường hơp hết hạn accessToken nhưng refreshToken vẫn còn hạn mà truy cập vào trang private -> redirect về trang refreshToken để lấy accessToken mới
-  if (refreshToken && !accessToken && PRIVATE_PATHS.some((path) => pathname.startsWith(path))) {
+  if (
+    refreshToken &&
+    !accessToken &&
+    [...PRIVATE_PATHS, ...DASHBOARD_PATHS].some((path) => pathname.startsWith(path))
+  ) {
     const url = new URL(PATH.REFRESH_TOKEN, request.url)
     url.searchParams.set('refreshToken', refreshToken)
     url.searchParams.set('redirectPath', pathname)
@@ -47,6 +58,14 @@ export function proxy(request: NextRequest) {
     const allowedRoles: string[] = [ROLE_NAME.ADMIN, ROLE_NAME.MANAGER, ROLE_NAME.SELLER]
     if (!allowedRoles.includes(roleName)) {
       return NextResponse.redirect(new URL(PATH.HOME, request.url))
+    }
+    // Chỉ ADMIN mơi được quyền vào trang dashboard/users, dashboard/roles, dashboard/permissions, dashboard/categoríe, dashboard/brands
+    const allowedRolesForAdminManagerOnlyPaths: string[] = [ROLE_NAME.ADMIN, ROLE_NAME.MANAGER]
+    if (
+      !allowedRolesForAdminManagerOnlyPaths.includes(roleName) &&
+      ADMIN_MANAGER_ONLY_PATHS.some((path) => pathname.startsWith(path))
+    ) {
+      return NextResponse.redirect(new URL(PATH.DASHBOARD, request.url))
     }
   }
 

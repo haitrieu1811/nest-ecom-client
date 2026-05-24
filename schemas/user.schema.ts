@@ -3,6 +3,7 @@ import z from 'zod'
 import { PHONE_NUMBER_REGEX } from '@/constants/regex'
 import { USER_STATUS } from '@/constants/auth.constant'
 import { RoleIncludePermissions, RoleSchema } from '@/schemas/role.schema'
+import { PaginationQuerySchema, PaginationResSchema } from '@/schemas/utils.schema'
 
 export const emailSchema = z.email('Error.EmailIsInvalid')
 
@@ -40,6 +41,58 @@ export const UserIncludeRolePermissionsSchema = UserSchema.omit({
   role: RoleIncludePermissions,
 })
 
+// Begin: CRUD user
+export const CreateUserBodySchema = UserSchema.pick({
+  email: true,
+  password: true,
+  name: true,
+  avatar: true,
+  status: true,
+  roleId: true,
+  phoneNumber: true,
+}).strict()
+
+export const CreateUserResSchema = UserSchema.omit({
+  password: true,
+  totpSecret: true,
+})
+
+export const UpdateUserBodySchema = CreateUserBodySchema
+
+export const UpdateUserResSchema = UserIncludeRolePermissionsSchema
+
+export const GetUsersQuerySchema = PaginationQuerySchema.extend({
+  email: z.string('Error.InvalidEmail').optional(),
+})
+
+export const GetUsersResSchema = z.object({
+  data: z.array(
+    UserIncludeRoleSchema.omit({
+      password: true,
+      totpSecret: true,
+    }),
+  ),
+  pagination: PaginationResSchema,
+})
+
+export const GetUserResSchema = UserIncludeRolePermissionsSchema
+
+export const UserIdParamSchema = z
+  .object({
+    userId: z.coerce.number().int('Error.UserIdMustBeAnInt').positive('Error.UserIdMustBePositive'),
+  })
+  .strict()
+// End: CRUD user
+
 export type UserType = z.infer<typeof UserSchema>
 export type UserIncludeRoleType = z.infer<typeof UserIncludeRoleSchema>
 export type UserIncludeRolePermissionsType = z.infer<typeof UserIncludeRolePermissionsSchema>
+
+export type CreateUserBodyType = z.infer<typeof CreateUserBodySchema>
+export type CreateUserResType = z.infer<typeof CreateUserResSchema>
+export type UpdateUserBodyType = z.infer<typeof UpdateUserBodySchema>
+export type UpdateUserResType = z.infer<typeof UpdateUserResSchema>
+export type GetUsersQueryType = z.infer<typeof GetUsersQuerySchema>
+export type GetUsersResType = z.infer<typeof GetUsersResSchema>
+export type GetUserResType = z.infer<typeof GetUserResSchema>
+export type UserIdParamType = z.infer<typeof UserIdParamSchema>

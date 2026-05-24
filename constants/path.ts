@@ -1,16 +1,26 @@
 const PATH = {
   HOME: '/',
+
   REGISTER: '/auth/register',
   LOGIN: '/auth/login',
   LOGOUT: '/auth/logout',
   RESET_PASSWORD: '/auth/reset-password',
   REFRESH_TOKEN: '/auth/refresh-token',
+
   ACCOUNT: '/account',
   ACCOUNT_ORDERS: '/account/orders',
   ACCOUNT_ADDRESSES: '/account/addresses',
   ACCOUNT_CHANGE_PASSWORD: '/account/change-password',
   ACCOUNT_SETTINGS: '/account/settings',
+
   DASHBOARD: '/dashboard',
+  DASHBOARD_USERS: '/dashboard/users',
+  DASHBOARD_USERS_NEW: '/dashboard/users/new',
+  DASHBOARD_USERS_DETAIL: (userId: number) => `/dashboard/users/${userId}`,
+  DASHBOARD_ROLES: '/dashboard/roles',
+  DASHBOARD_PERMISSIONS: '/dashboard/permissions',
+  DASHBOARD_CATEGORIES: '/dashboard/categories',
+  DASHBOARD_BRANDS: '/dashboard/brands',
   DASHBOARD_PROFILE: '/dashboard/profile',
   DASHBOARD_ORDERS: '/dashboard/orders',
   DASHBOARD_SETTINGS: '/dashboard/settings',

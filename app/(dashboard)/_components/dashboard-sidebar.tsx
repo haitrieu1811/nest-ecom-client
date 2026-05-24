@@ -1,6 +1,6 @@
 'use client'
 
-import { BookTextIcon, HomeIcon, ShoppingBagIcon, ShoppingBasketIcon } from 'lucide-react'
+import { BookTextIcon, HomeIcon, LucideIcon, ShoppingBagIcon, ShoppingBasketIcon, UserIcon } from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
 
@@ -18,7 +18,21 @@ import {
 import PATH from '@/constants/path'
 import { useAppStore } from '@/providers/app.provider'
 
-const data = {
+export type DataSidebarType = {
+  navMain: {
+    title: string
+    url: string
+    icon: LucideIcon
+    isActive?: boolean
+    onlyAdminAndManager?: boolean
+    items?: {
+      title: string
+      url: string
+    }[]
+  }[]
+}
+
+const data: DataSidebarType = {
   navMain: [
     {
       title: 'Về trang cửa hàng',
@@ -26,10 +40,25 @@ const data = {
       icon: HomeIcon,
     },
     {
+      title: 'Người dùng',
+      url: PATH.DASHBOARD_USERS,
+      icon: UserIcon,
+      onlyAdminAndManager: true,
+      items: [
+        {
+          title: 'Tất cả người dùng',
+          url: PATH.DASHBOARD_USERS,
+        },
+        {
+          title: 'Thêm người dùng',
+          url: PATH.DASHBOARD_USERS_NEW,
+        },
+      ],
+    },
+    {
       title: 'Đơn hàng',
       url: PATH.DASHBOARD_ORDERS,
       icon: BookTextIcon,
-      isActive: true,
       items: [
         {
           title: 'Tất cả đơn hàng',
@@ -40,6 +69,7 @@ const data = {
           url: '#',
         },
       ],
+      onlyAdminAndManager: false,
     },
     {
       title: 'Sản phẩm',
@@ -55,6 +85,7 @@ const data = {
           url: PATH.DASHBOARD_PRODUCTS_NEW,
         },
       ],
+      onlyAdminAndManager: false,
     },
   ],
 }

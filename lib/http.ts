@@ -23,6 +23,8 @@ import { UpdateProfileResType } from '@/schemas/profile.schema'
 
 const ENTITY_ERROR_STATUS = 422
 const UNAUTHORIZED_ERROR_STATUS = 401
+const FORBIDDEN_ERROR_STATUS = 403
+const NOT_FOUND_ERROR_STATUS = 404
 
 type CustomOptions = Omit<RequestInit, 'method'> & {
   baseUrl?: string
@@ -141,6 +143,22 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
         }
       }
     }
+    // Khi gặp lỗi 403 thì hiển thị toast lỗi
+    else if (res.status === FORBIDDEN_ERROR_STATUS) {
+      throw new HttpError({
+        status: FORBIDDEN_ERROR_STATUS,
+        payload,
+        message: 'Lỗi phân quyền!',
+      })
+    }
+    // Khi gặp lỗi 404 thì hiển thị toast lỗi
+    else if (res.status === NOT_FOUND_ERROR_STATUS) {
+      throw new HttpError({
+        status: NOT_FOUND_ERROR_STATUS,
+        payload,
+        message: 'Không tìm thấy!',
+      })
+    }
   }
   // Xử lý khi request thành công
   if (isBrowser) {
@@ -186,7 +204,7 @@ const http = {
     })
   },
 
-  delete<Response>(path: string, body: any, options?: Omit<CustomOptions, 'body'>) {
+  delete<Response>(path: string, body?: any, options?: Omit<CustomOptions, 'body'>) {
     return request<Response>(path, 'DELETE', {
       ...options,
       body,
