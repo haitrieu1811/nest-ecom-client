@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 
 import userApi from '@/apis/user.api'
-import { columns } from '@/app/(dashboard)/dashboard/users/columns'
+import { userColumns } from '@/app/(dashboard)/dashboard/users/columns'
 import CreateUserForm from '@/app/(dashboard)/dashboard/users/create-user-form'
 import SearchBox from '@/components/search-box'
 import {
@@ -101,7 +101,7 @@ export default function UsersTable() {
     <UsersTableContext value={{ currentUser, setCurrentUser, currentUserId, setCurrentUserId }}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Danh sách người dùng</CardTitle>
+          <CardTitle className="text-xl">Người dùng ({pagination?.totalRows || 0})</CardTitle>
           <CardDescription>Dưới đây là danh sách tất cả người dùng đã đăng ký trong hệ thống của bạn.</CardDescription>
           <CardAction>
             <Button variant="outline" size="sm" onClick={() => setOpenCreate(true)}>
@@ -117,7 +117,7 @@ export default function UsersTable() {
             classNameWrapper="mb-4 max-w-sm"
             onChange={setEmailSearch}
           />
-          <DataTable columns={columns} data={users} paginationAPI={pagination} />
+          <DataTable columns={userColumns} data={users} paginationAPI={pagination} />
         </CardContent>
       </Card>
 

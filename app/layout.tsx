@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Bricolage_Grotesque as FontSans } from 'next/font/google'
+import { Archivo as FontSans } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
 
 import RefreshToken from '@/components/refresh-token'
@@ -13,6 +13,7 @@ import './globals.css'
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
+  weight: ['200', '300', '400', '500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {

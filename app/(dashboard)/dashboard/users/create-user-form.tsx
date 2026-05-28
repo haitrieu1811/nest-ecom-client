@@ -1,12 +1,11 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import roleApi from '@/apis/role.api'
 import userApi from '@/apis/user.api'
 import InputAvatar from '@/components/input-avatar'
 import InputPassword from '@/components/input-password'
@@ -16,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { USER_STATUS } from '@/constants/auth.constant'
+import useRoles from '@/hooks/use-roles'
 import useUploadImages from '@/hooks/use-upload-images'
 import { handleErrorFromAPI } from '@/lib/utils'
 import {
@@ -38,11 +38,6 @@ export default function CreateUserForm({ userData, onCreateSuccess, onUpdateSucc
   const [avatarFile, setAvatarFile] = React.useState<File | null>(null)
 
   const { uploadImagesMutation } = useUploadImages()
-
-  const getRolesQuery = useQuery({
-    queryKey: ['get-roles'],
-    queryFn: () => roleApi.getAll(),
-  })
 
   const createUserMutation = useMutation({
     mutationKey: ['create-user'],
@@ -86,7 +81,7 @@ export default function CreateUserForm({ userData, onCreateSuccess, onUpdateSucc
 
   const isPending = uploadImagesMutation.isPending || createUserMutation.isPending || updateUserMutation.isPending
 
-  const roles = getRolesQuery.data?.payload.data || []
+  const { roles } = useRoles({ page: 1, limit: 20 })
 
   const form = useForm<CreateUserBodyType>({
     resolver: zodResolver(CreateUserBodySchema),

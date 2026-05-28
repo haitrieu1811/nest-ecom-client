@@ -18,6 +18,8 @@ const PATH = {
   DASHBOARD_USERS_NEW: '/dashboard/users/new',
   DASHBOARD_USERS_DETAIL: (userId: number) => `/dashboard/users/${userId}`,
   DASHBOARD_ROLES: '/dashboard/roles',
+  DASHBOARD_ROLES_NEW: '/dashboard/roles/new',
+  DASHBOARD_ROLES_DETAIL: (roleId: number) => `/dashboard/roles/${roleId}`,
   DASHBOARD_PERMISSIONS: '/dashboard/permissions',
   DASHBOARD_CATEGORIES: '/dashboard/categories',
   DASHBOARD_BRANDS: '/dashboard/brands',

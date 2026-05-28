@@ -1,6 +1,14 @@
 'use client'
 
-import { BookTextIcon, HomeIcon, LucideIcon, ShoppingBagIcon, ShoppingBasketIcon, UserIcon } from 'lucide-react'
+import {
+  BookTextIcon,
+  HomeIcon,
+  KeyIcon,
+  LucideIcon,
+  ShoppingBagIcon,
+  ShoppingBasketIcon,
+  UserIcon,
+} from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
 
@@ -38,6 +46,26 @@ const data: DataSidebarType = {
       title: 'Về trang cửa hàng',
       url: PATH.HOME,
       icon: HomeIcon,
+    },
+    {
+      title: 'Phân quyền',
+      url: PATH.DASHBOARD_ROLES,
+      icon: KeyIcon,
+      onlyAdminAndManager: true,
+      items: [
+        {
+          title: 'Roles',
+          url: PATH.DASHBOARD_ROLES,
+        },
+        {
+          title: 'Permissions',
+          url: PATH.DASHBOARD_PERMISSIONS,
+        },
+        {
+          title: 'Thêm role mới',
+          url: PATH.DASHBOARD_ROLES_NEW,
+        },
+      ],
     },
     {
       title: 'Người dùng',

@@ -9,6 +9,8 @@ import { EntityError, HttpError } from '@/lib/http'
 import { AccessTokenPayload, ProfileInLSType, RefreshTokenPayload } from '@/types/utils.type'
 import authApi from '@/apis/auth.api'
 import { toast } from 'sonner'
+import { PermissionInRoleType } from '@/schemas/role.schema'
+import { PermissionType } from '@/schemas/permission.schema'
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -125,4 +127,38 @@ export const handleCheckAndRefreshToken = async ({
       onError?.()
     }
   }
+}
+
+type GroupedPermissions = Record<string, PermissionInRoleType[]>
+
+export const groupPermissionsByModule = (permissions: PermissionInRoleType[]): GroupedPermissions => {
+  return permissions.reduce<GroupedPermissions>((acc, permission) => {
+    // /auth/register -> auth
+    // /users/:id -> users
+    // / -> root
+    const moduleName = permission.path.split('/').filter(Boolean)[0] || 'root'
+
+    if (!acc[moduleName]) {
+      acc[moduleName] = []
+    }
+
+    acc[moduleName].push(permission)
+
+    return acc
+  }, {})
+}
+
+type PermissionGroup = {
+  module: string
+  permissions: PermissionInRoleType[]
+}
+
+export const groupPermissionsByModuleArray = (
+  permissions: PermissionInRoleType[] | PermissionType[],
+): PermissionGroup[] => {
+  const grouped = groupPermissionsByModule(permissions)
+  return Object.entries(grouped).map(([module, permissions]) => ({
+    module,
+    permissions,
+  }))
 }

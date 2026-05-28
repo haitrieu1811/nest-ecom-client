@@ -1,14 +1,13 @@
 import z from 'zod'
 
 import { PermissionSchema } from '@/schemas/permission.schema'
-import { PaginationResSchema } from '@/schemas/utils.schema'
 
 export const RoleSchema = z
   .object({
     id: z.number().int().positive(),
-    name: z.string('Error.RoleNameIsRequired').max(50, 'Error.RoleNameIsTooLong'),
-    description: z.string().max(200, 'Error.RoleDescriptionIsTooLong').default(''),
-    isActive: z.boolean().default(true),
+    name: z.string('Error.RoleNameIsRequired').min(1, 'Error.RoleNameIsRequired').max(50, 'Error.RoleNameIsTooLong'),
+    description: z.string().max(200, 'Error.RoleDescriptionIsTooLong').optional(),
+    isActive: z.boolean().optional(),
     deletedAt: z.iso.datetime().nullable(),
     createdAt: z.iso.datetime(),
     updatedAt: z.iso.datetime(),
@@ -17,31 +16,26 @@ export const RoleSchema = z
   })
   .strict()
 
+export const RoleIncludeCountSchema = RoleSchema.extend({
+  _count: z.object({
+    users: z.number(),
+  }),
+})
+
+export const PermissionInRoleSchema = PermissionSchema.pick({
+  id: true,
+  module: true,
+  path: true,
+  method: true,
+  name: true,
+  description: true,
+})
+
 export const RoleIncludePermissions = RoleSchema.extend({
-  permissions: z.array(
-    PermissionSchema.pick({
-      path: true,
-      method: true,
-    }),
-  ),
+  permissions: z.array(PermissionInRoleSchema),
 })
 
 export const CreateRoleBodySchema = RoleSchema.pick({
-  name: true,
-  description: true,
-  isActive: true,
-}).strict()
-
-export const CreateRoleResSchema = RoleSchema
-
-export const GetRolesResSchema = z.object({
-  data: z.array(RoleSchema),
-  pagination: PaginationResSchema,
-})
-
-export const GetRoleResSchema = RoleIncludePermissions
-
-export const UpdateRoleBodySchema = RoleSchema.pick({
   name: true,
   description: true,
   isActive: true,
@@ -56,6 +50,17 @@ export const UpdateRoleBodySchema = RoleSchema.pick({
   })
   .strict()
 
+export const CreateRoleResSchema = RoleSchema
+
+export const GetRolesResSchema = z.object({
+  data: z.array(RoleIncludeCountSchema),
+  totalRows: z.number(),
+})
+
+export const GetRoleResSchema = RoleIncludePermissions
+
+export const UpdateRoleBodySchema = CreateRoleBodySchema
+
 export const UpdateRoleResSchema = RoleIncludePermissions
 
 export const RoleIdParamSchema = z
@@ -65,6 +70,8 @@ export const RoleIdParamSchema = z
   .strict()
 
 export type RoleType = z.infer<typeof RoleSchema>
+export type RoleIncludeCountType = z.infer<typeof RoleIncludeCountSchema>
+export type PermissionInRoleType = z.infer<typeof PermissionInRoleSchema>
 export type RoleIncludePermissionsType = z.infer<typeof RoleIncludePermissions>
 
 export type CreateRoleBodyType = z.infer<typeof CreateRoleBodySchema>
