@@ -7,6 +7,7 @@ import {
   LucideIcon,
   ShoppingBagIcon,
   ShoppingBasketIcon,
+  TagsIcon,
   UserIcon,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -82,6 +83,18 @@ const data: DataSidebarType = {
           url: PATH.DASHBOARD_USERS_NEW,
         },
       ],
+    },
+    {
+      title: 'Danh mục sản phẩm',
+      url: PATH.DASHBOARD_CATEGORIES,
+      icon: TagsIcon,
+      items: [
+        {
+          title: 'Tất cả danh mục',
+          url: PATH.DASHBOARD_CATEGORIES,
+        },
+      ],
+      onlyAdminAndManager: true,
     },
     {
       title: 'Đơn hàng',

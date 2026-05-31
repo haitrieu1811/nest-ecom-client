@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
 
+import Dashboard from '@/app/(dashboard)/dashboard/dashboard'
+
 export const metadata: Metadata = {
   title: 'Dashboard | Nest Ecom',
   description:
@@ -7,5 +9,5 @@ export const metadata: Metadata = {
 }
 
 export default function DashboardPage() {
-  return <div>DashboardPage</div>
+  return <Dashboard />
 }

@@ -6,6 +6,7 @@ import RefreshToken from '@/components/refresh-token'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
+import AppProvider from '@/providers/app.provider'
 import TanstackQueryProvider from '@/providers/tanstack-query.provider'
 import ThemeProvider from '@/providers/theme.provider'
 import './globals.css'
@@ -13,7 +14,7 @@ import './globals.css'
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
-  weight: ['200', '300', '400', '500', '600', '700', '800'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
 })
 
 export const metadata: Metadata = {
@@ -33,10 +34,12 @@ export default function RootLayout({
         <TanstackQueryProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <TooltipProvider>
-              <NextTopLoader shadow={false} showSpinner={false} color="var(--primary)" />
-              {children}
-              <RefreshToken />
-              <Toaster richColors position="top-center" />
+              <AppProvider>
+                <NextTopLoader shadow={false} showSpinner={false} color="var(--primary)" />
+                {children}
+                <RefreshToken />
+                <Toaster richColors position="top-center" />
+              </AppProvider>
             </TooltipProvider>
           </ThemeProvider>
         </TanstackQueryProvider>

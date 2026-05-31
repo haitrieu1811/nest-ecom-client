@@ -14,12 +14,12 @@ export const PaginationResSchema = z.object({
 export const EmptyBodySchema = z.object({}).strict()
 
 export const PaginationQuerySchema = z.object({
-  page: z.coerce.number('Error.PageIsInvalid').int('Error.PageIsInvalid').positive('Error.PageIsInvalid').default(1),
+  page: z.coerce.number('Error.PageIsInvalid').int('Error.PageIsInvalid').positive('Error.PageIsInvalid').optional(),
   limit: z.coerce
     .number('Error.LimitIsInvalid')
     .int('Error.LimitIsInvalid')
     .positive('Error.LimitIsInvalid')
-    .default(20),
+    .optional(),
 })
 
 export type MessageResType = z.infer<typeof MessageResSchema>

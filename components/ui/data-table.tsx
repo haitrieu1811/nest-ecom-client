@@ -18,16 +18,22 @@ import React from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { PaginationResType } from '@/schemas/utils.schema'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   paginationAPI?: PaginationResType
+  tableCaption?: string
 }
 
-export default function DataTable<TData, TValue>({ columns, data, paginationAPI }: DataTableProps<TData, TValue>) {
+export default function DataTable<TData, TValue>({
+  columns,
+  data,
+  paginationAPI,
+  tableCaption,
+}: DataTableProps<TData, TValue>) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -110,6 +116,7 @@ export default function DataTable<TData, TValue>({ columns, data, paginationAPI 
               </TableRow>
             )}
           </TableBody>
+          {tableCaption && <TableCaption>{tableCaption}</TableCaption>}
         </Table>
       </div>
       {/* Phân trang */}

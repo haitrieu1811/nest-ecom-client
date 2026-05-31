@@ -3,12 +3,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { formatDistanceToNow } from 'date-fns'
 import { vi } from 'date-fns/locale/vi'
-import { ChevronLeftIcon, Trash2Icon } from 'lucide-react'
+import { ChevronLeftIcon, Trash2Icon, UserRoundIcon } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import React from 'react'
 
 import userApi from '@/apis/user.api'
 import CreateUserForm from '@/app/(dashboard)/dashboard/users/create-user-form'
+import Loading from '@/components/loading'
+import NotFound from '@/components/not-found'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,11 +23,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { Spinner } from '@/components/ui/spinner'
 import { Table, TableBody, TableCaption, TableCell, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -33,7 +33,6 @@ import { USER_STATUS } from '@/constants/auth.constant'
 import PATH from '@/constants/path'
 import useDeleteUser from '@/hooks/use-delete-user'
 import { cn } from '@/lib/utils'
-import { Skeleton } from '@/components/ui/skeleton'
 
 export default function UserDetail() {
   const router = useRouter()
@@ -169,34 +168,14 @@ export default function UserDetail() {
       )}
 
       {!user && !getUserDetailQuery.isLoading && (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="default">
-              <Avatar className="size-12">
-                <AvatarImage src="https://github.com/shadcn.png" className="grayscale" />
-                <AvatarFallback>LR</AvatarFallback>
-              </Avatar>
-            </EmptyMedia>
-            <EmptyTitle>Không tìm thấy người dùng</EmptyTitle>
-            <EmptyDescription>Không tìm thấy thông tin người dùng với ID là {userId}.</EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button size="sm" onClick={() => router.back()}>
-              Trở về trang trước
-            </Button>
-          </EmptyContent>
-        </Empty>
+        <NotFound
+          icon={UserRoundIcon}
+          title="Không tìm thấy người dùng"
+          description="Người dùng bạn đang tìm kiếm không tồn tại"
+        />
       )}
 
-      {getUserDetailQuery.isLoading && (
-        <div className="grid grid-cols-12 gap-4 h-[50vh]">
-          {Array(2)
-            .fill(0)
-            .map((_, index) => (
-              <Skeleton key={index} className="col-span-6" />
-            ))}
-        </div>
-      )}
+      {getUserDetailQuery.isLoading && <Loading />}
     </React.Fragment>
   )
 }

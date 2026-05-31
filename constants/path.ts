@@ -22,6 +22,7 @@ const PATH = {
   DASHBOARD_ROLES_DETAIL: (roleId: number) => `/dashboard/roles/${roleId}`,
   DASHBOARD_PERMISSIONS: '/dashboard/permissions',
   DASHBOARD_CATEGORIES: '/dashboard/categories',
+  DASHBOARD_CATEGORIES_DETAIL: (categoryId: number) => `/dashboard/categories/${categoryId}`,
   DASHBOARD_BRANDS: '/dashboard/brands',
   DASHBOARD_PROFILE: '/dashboard/profile',
   DASHBOARD_ORDERS: '/dashboard/orders',

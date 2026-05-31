@@ -16,9 +16,9 @@ export default function Header() {
   return (
     <header className="border-b">
       <div className="w-7xl h-14 mx-auto flex justify-between items-center">
-        <Link href={PATH.HOME} className="text-2xl font-bold flex items-center space-x-2">
+        <Link href={PATH.HOME} className="flex items-center space-x-2">
           <ShoppingBag />
-          <span>NestEcom</span>
+          <span className="font-semibold">Mua hàng trực tuyến</span>
         </Link>
         <div className="flex items-center space-x-4">
           {!isAuthenticated && isClient && (
