@@ -162,3 +162,23 @@ export const groupPermissionsByModuleArray = (
     permissions,
   }))
 }
+
+export const generateNameId = (name: string, id: number) => {
+  const slug = name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+  return `${slug}-i-${id}`
+}
+
+export const extractIdFromNameId = (nameId: string) => {
+  const parts = nameId.split('-i-')
+  const idPart = parts[parts.length - 1]
+  const id = parseInt(idPart, 10)
+  return isNaN(id) ? null : id
+}

@@ -2,6 +2,7 @@
 
 import {
   BookTextIcon,
+  FlagIcon,
   HomeIcon,
   KeyIcon,
   LucideIcon,
@@ -96,6 +97,22 @@ const data: DataSidebarType = {
         {
           title: 'Thêm danh mục mới',
           url: PATH.DASHBOARD_CATEGORIES_NEW,
+        },
+      ],
+      onlyAdminAndManager: true,
+    },
+    {
+      title: 'Thương hiệu',
+      url: PATH.DASHBOARD_BRANDS,
+      icon: FlagIcon,
+      items: [
+        {
+          title: 'Tất cả thương hiệu',
+          url: PATH.DASHBOARD_BRANDS,
+        },
+        {
+          title: 'Thêm thương hiệu mới',
+          url: PATH.DASHBOARD_BRANDS_NEW,
         },
       ],
       onlyAdminAndManager: true,

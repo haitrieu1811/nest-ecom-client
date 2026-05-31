@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import React from 'react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -13,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ROLE_NAME } from '@/constants/auth.constant'
 import PATH from '@/constants/path'
 import useIsClient from '@/hooks/use-is-client'
 import useLogout from '@/hooks/use-logout'
@@ -47,16 +45,6 @@ export default function HeaderAccount() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
-        {profile.role.name !== ROLE_NAME.CLIENT && (
-          <React.Fragment>
-            <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
-                <Link href={PATH.DASHBOARD}>Dashboard</Link>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-          </React.Fragment>
-        )}
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link href={PATH.ACCOUNT}>Tài khoản</Link>

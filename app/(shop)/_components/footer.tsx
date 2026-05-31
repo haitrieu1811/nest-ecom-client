@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="w-full border-t bg-background py-8 px-4 md:px-12 mt-12 text-muted-foreground text-sm">
+    <footer className="w-full border-t bg-card py-8 px-4 md:px-12 text-muted-foreground text-sm">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
           <h3 className="font-semibold text-foreground mb-2">Về chúng tôi</h3>

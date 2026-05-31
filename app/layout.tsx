@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Archivo as FontSans } from 'next/font/google'
+import { Be_Vietnam_Pro as FontSans } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
 
 import RefreshToken from '@/components/refresh-token'
