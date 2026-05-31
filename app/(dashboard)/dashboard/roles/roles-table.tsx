@@ -1,26 +1,15 @@
 'use client'
 
-import { CirclePlusIcon, Trash2Icon } from 'lucide-react'
+import { CirclePlusIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import React from 'react'
 
 import { roleColumns } from '@/app/(dashboard)/dashboard/roles/columns'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import AlertDialogDestructive from '@/components/alert-dialog-destructive'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import DataTable from '@/components/ui/data-table'
-import { Spinner } from '@/components/ui/spinner'
 import PATH from '@/constants/path'
 import useDeleteRole from '@/hooks/use-delete-role'
 import useRoles from '@/hooks/use-roles'
@@ -76,26 +65,13 @@ export default function RolesTable() {
       </Card>
 
       {/* Xóa role */}
-      <AlertDialog open={!!currentRoleId} onOpenChange={(open) => !open && setCurrentRoleId(null)}>
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-              <Trash2Icon />
-            </AlertDialogMedia>
-            <AlertDialogTitle>Bạn có chắc muốn xóa role này không?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Hành động này không thể hoàn tác. Tất cả người dùng có role này sẽ bị ảnh hưởng.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel variant="outline">Hủy bỏ</AlertDialogCancel>
-            <AlertDialogAction disabled={deleteRoleMutation.isPending} variant="destructive" onClick={handleDeleteRole}>
-              {deleteRoleMutation.isPending && <Spinner />}
-              Tiếp tục
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertDialogDestructive
+        open={!!currentRoleId}
+        onOpenChange={(open) => !open && setCurrentRoleId(null)}
+        title="Xóa role?"
+        description="Hành động này sẽ xóa vĩnh viễn role này. Hãy chắc chắn rằng bạn muốn tiếp tục."
+        onConfirm={handleDeleteRole}
+      />
     </RolesTableContext>
   )
 }

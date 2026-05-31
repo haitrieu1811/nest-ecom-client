@@ -10,22 +10,10 @@ import React from 'react'
 import roleApi from '@/apis/role.api'
 import BackButton from '@/app/(dashboard)/_components/back-button'
 import CreateRoleForm from '@/app/(dashboard)/dashboard/roles/create-role-form'
+import AlertDialogDestructive from '@/components/alert-dialog-destructive'
 import Loading from '@/components/loading'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import PATH from '@/constants/path'
 import useDeleteRole from '@/hooks/use-delete-role'
@@ -36,6 +24,8 @@ export default function RoleDetail() {
 
   const params = useParams<{ id: string }>()
   const roleId = Number(params.id)
+
+  const [isDeleting, setIsDeleting] = React.useState<boolean>(false)
 
   const getRoleDetailQuery = useQuery({
     queryKey: ['get-role-detail', roleId],
@@ -77,36 +67,17 @@ export default function RoleDetail() {
               </Badge>
             </div>
             {/* Xóa role */}
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">
-                  <Trash2Icon className="size-4" />
-                  Xóa role
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent size="sm">
-                <AlertDialogHeader>
-                  <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-                    <Trash2Icon />
-                  </AlertDialogMedia>
-                  <AlertDialogTitle>Bạn có chắc muốn xóa role này không?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Hành động này không thể hoàn tác. Tất cả người dùng có role này sẽ bị ảnh hưởng.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel variant="outline">Hủy bỏ</AlertDialogCancel>
-                  <AlertDialogAction
-                    disabled={deleteRoleMutation.isPending}
-                    variant="destructive"
-                    onClick={() => deleteRoleMutation.mutate(role.id)}
-                  >
-                    {deleteRoleMutation.isPending && <Spinner />}
-                    Tiếp tục
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button variant="destructive" size="sm" onClick={() => setIsDeleting(true)}>
+              <Trash2Icon className="size-4" />
+              Xóa role
+            </Button>
+            <AlertDialogDestructive
+              open={isDeleting}
+              onOpenChange={setIsDeleting}
+              title="Xóa role?"
+              description="Điều này sẽ xóa vĩnh viễn role này. Bạn có chắc chắn muốn tiếp tục?"
+              onConfirm={() => deleteRoleMutation.mutate(role.id)}
+            />
           </div>
           <Tabs defaultValue="overview">
             <TabsList variant="line">

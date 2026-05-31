@@ -12,20 +12,9 @@ import BackButton from '@/app/(dashboard)/_components/back-button'
 import CategoryTranslationsTable from '@/app/(dashboard)/dashboard/categories/[id]/category-translations-table'
 import SubCategoriesTable from '@/app/(dashboard)/dashboard/categories/[id]/sub-categories-table'
 import CreateCategoryForm from '@/app/(dashboard)/dashboard/categories/create-category-form'
+import AlertDialogDestructive from '@/components/alert-dialog-destructive'
 import Loading from '@/components/loading'
 import NotFound from '@/components/not-found'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,6 +28,8 @@ export default function CategoryDetail() {
 
   const params = useParams<{ id: string }>()
   const categoryId = Number(params.id)
+
+  const [isDeleting, setIsDeleting] = React.useState<boolean>(false)
 
   const getCategoryDetailQuery = useQuery({
     queryKey: ['get-category-detail', categoryId],
@@ -71,34 +62,17 @@ export default function CategoryDetail() {
               <CardDescription>{category.description}</CardDescription>
               <CardAction>
                 {/* Xóa danh mục */}
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive">
-                      <Trash2Icon />
-                      Xóa danh mục
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent size="sm">
-                    <AlertDialogHeader>
-                      <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-                        <Trash2Icon />
-                      </AlertDialogMedia>
-                      <AlertDialogTitle>Xóa danh mục?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Điều này sẽ xóa vĩnh viễn danh mục sản phẩm này. Bạn có chắc chắn muốn tiếp tục?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel variant="outline">Hủy bỏ</AlertDialogCancel>
-                      <AlertDialogAction
-                        variant="destructive"
-                        onClick={() => deleteCategoryMutation.mutate(category.id)}
-                      >
-                        Tiếp tục
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <Button variant="destructive" onClick={() => setIsDeleting(true)}>
+                  <Trash2Icon />
+                  Xóa danh mục
+                </Button>
+                <AlertDialogDestructive
+                  open={isDeleting}
+                  onOpenChange={setIsDeleting}
+                  title="Xóa danh mục?"
+                  description="Điều này sẽ xóa vĩnh viễn danh mục sản phẩm này. Bạn có chắc chắn muốn tiếp tục?"
+                  onConfirm={() => deleteCategoryMutation.mutate(category.id)}
+                />
               </CardAction>
             </CardHeader>
             <CardContent>

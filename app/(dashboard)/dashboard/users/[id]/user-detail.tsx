@@ -9,24 +9,12 @@ import React from 'react'
 
 import userApi from '@/apis/user.api'
 import CreateUserForm from '@/app/(dashboard)/dashboard/users/create-user-form'
+import AlertDialogDestructive from '@/components/alert-dialog-destructive'
 import Loading from '@/components/loading'
 import NotFound from '@/components/not-found'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Spinner } from '@/components/ui/spinner'
 import { Table, TableBody, TableCaption, TableCell, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { USER_STATUS } from '@/constants/auth.constant'
@@ -39,6 +27,8 @@ export default function UserDetail() {
 
   const params = useParams<{ id: string }>()
   const userId = params.id
+
+  const [isDeleting, setIsDeleting] = React.useState<boolean>(false)
 
   const getUserDetailQuery = useQuery({
     queryKey: ['get-user-detail', userId],
@@ -71,36 +61,18 @@ export default function UserDetail() {
                 <Badge variant="outline">{user.role.name}</Badge>
               </div>
             </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">
-                  <Trash2Icon className="size-4" />
-                  Xóa người dùng
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent size="sm">
-                <AlertDialogHeader>
-                  <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-                    <Trash2Icon />
-                  </AlertDialogMedia>
-                  <AlertDialogTitle>Xóa người dùng?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Hành động này sẽ xóa vĩnh viễn người dùng khỏi hệ thống. Bạn có chắc chắn muốn tiếp tục?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel variant="outline">Hủy bỏ</AlertDialogCancel>
-                  <AlertDialogAction
-                    disabled={deleteUserMutation.isPending}
-                    variant="destructive"
-                    onClick={() => deleteUserMutation.mutate(Number(userId))}
-                  >
-                    {deleteUserMutation.isPending && <Spinner />}
-                    Tiếp tục
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            {/* Xóa người dùng */}
+            <Button variant="destructive" size="sm" onClick={() => setIsDeleting(true)}>
+              <Trash2Icon className="size-4" />
+              Xóa người dùng
+            </Button>
+            <AlertDialogDestructive
+              open={isDeleting}
+              onOpenChange={setIsDeleting}
+              title="Xóa người dùng?"
+              description="Điều này sẽ xóa vĩnh viễn người dùng này. Bạn có chắc chắn muốn tiếp tục?"
+              onConfirm={() => deleteUserMutation.mutate(Number(userId))}
+            />
           </div>
           <div className="mt-6">
             <Tabs defaultValue="overview">

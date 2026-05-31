@@ -1,31 +1,20 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { PlusCircleIcon, Trash2Icon } from 'lucide-react'
+import { PlusCircleIcon } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 
 import userApi from '@/apis/user.api'
 import { userColumns } from '@/app/(dashboard)/dashboard/users/columns'
 import CreateUserForm from '@/app/(dashboard)/dashboard/users/create-user-form'
+import AlertDialogDestructive from '@/components/alert-dialog-destructive'
 import SearchBox from '@/components/search-box'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import DataTable from '@/components/ui/data-table'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Spinner } from '@/components/ui/spinner'
 import useDebounce from '@/hooks/use-debounce'
 import useDeleteUser from '@/hooks/use-delete-user'
 import { UserIncludeRoleType } from '@/schemas/user.schema'
@@ -97,6 +86,11 @@ export default function UsersTable() {
     },
   })
 
+  const handleDeleteUser = () => {
+    if (!currentUserId) return
+    deleteUserMutation.mutate(currentUserId)
+  }
+
   return (
     <UsersTableContext value={{ currentUser, setCurrentUser, currentUserId, setCurrentUserId }}>
       <Card>
@@ -149,30 +143,13 @@ export default function UsersTable() {
       </Dialog>
 
       {/* Xác nhận xóa người dùng */}
-      <AlertDialog open={!!currentUserId} onOpenChange={(value) => !value && setCurrentUserId(null)}>
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-              <Trash2Icon />
-            </AlertDialogMedia>
-            <AlertDialogTitle>Xóa người dùng?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Hành động này sẽ xóa vĩnh viễn người dùng khỏi hệ thống. Bạn có chắc chắn muốn tiếp tục?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel variant="outline">Hủy bỏ</AlertDialogCancel>
-            <AlertDialogAction
-              disabled={deleteUserMutation.isPending}
-              variant="destructive"
-              onClick={() => deleteUserMutation.mutate(currentUserId!)}
-            >
-              {deleteUserMutation.isPending && <Spinner />}
-              Tiếp tục
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertDialogDestructive
+        open={!!currentUserId}
+        onOpenChange={(open) => !open && setCurrentUserId(null)}
+        title="Xóa người dùng?"
+        description="Hành động này sẽ xóa vĩnh viễn người dùng này khỏi hệ thống. Hãy chắc chắn rằng bạn muốn tiếp tục."
+        onConfirm={handleDeleteUser}
+      />
     </UsersTableContext>
   )
 }

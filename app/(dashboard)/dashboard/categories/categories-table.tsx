@@ -1,21 +1,11 @@
 'use client'
 
-import { PlusCircle, Trash2Icon } from 'lucide-react'
+import { PlusCircle } from 'lucide-react'
 import React from 'react'
 
 import { categoryColumns } from '@/app/(dashboard)/dashboard/categories/columns'
 import CreateCategoryForm from '@/app/(dashboard)/dashboard/categories/create-category-form'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import AlertDialogDestructive from '@/components/alert-dialog-destructive'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import DataTable from '@/components/ui/data-table'
@@ -123,25 +113,13 @@ export default function CategoriesTable() {
       </Dialog>
 
       {/* Xóa danh mục */}
-      <AlertDialog open={!!currentCategoryId} onOpenChange={(open) => !open && setCurrentCategoryId(null)}>
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-              <Trash2Icon />
-            </AlertDialogMedia>
-            <AlertDialogTitle>Xóa danh mục?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Điều này sẽ xóa vĩnh viễn danh mục sản phẩm này. Bạn có chắc chắn muốn tiếp tục?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel variant="outline">Hủy bỏ</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleDeleteCategory}>
-              Tiếp tục
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertDialogDestructive
+        open={!!currentCategoryId}
+        onOpenChange={(open) => !open && setCurrentCategoryId(null)}
+        title="Xóa danh mục"
+        description="Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác."
+        onConfirm={handleDeleteCategory}
+      />
     </CategoriesTableContext>
   )
 }

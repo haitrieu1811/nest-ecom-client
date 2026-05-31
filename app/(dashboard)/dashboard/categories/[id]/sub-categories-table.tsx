@@ -2,22 +2,12 @@
 
 import { formatDistanceToNow } from 'date-fns'
 import { vi } from 'date-fns/locale/vi'
-import { EllipsisIcon, PlusCircleIcon, TagsIcon, Trash2Icon } from 'lucide-react'
+import { EllipsisIcon, PlusCircleIcon, TagsIcon } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
 import CreateCategoryForm from '@/app/(dashboard)/dashboard/categories/create-category-form'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogMedia,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import AlertDialogDestructive from '@/components/alert-dialog-destructive'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
@@ -177,25 +167,13 @@ export default function SubCategoriesTable({ parentId }: SubCategoriesTableProps
       </Dialog>
 
       {/* Xác nhận xóa danh mục con */}
-      <AlertDialog open={!!currentSubCategoryId} onOpenChange={(open) => !open && setCurrentSubCategoryId(null)}>
-        <AlertDialogContent size="sm">
-          <AlertDialogHeader>
-            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-              <Trash2Icon />
-            </AlertDialogMedia>
-            <AlertDialogTitle>Xóa danh mục con?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Hành động này sẽ xóa vĩnh viễn danh mục con này. Hãy chắc chắn rằng bạn muốn tiếp tục.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel variant="outline">Hủy bỏ</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleDeleteSubCategory}>
-              Tiếp tục
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <AlertDialogDestructive
+        open={!!currentSubCategoryId}
+        onOpenChange={(open) => !open && setCurrentSubCategoryId(null)}
+        title="Xóa danh mục con?"
+        description="Hành động này sẽ xóa vĩnh viễn danh mục con này. Hãy chắc chắn rằng bạn muốn tiếp tục."
+        onConfirm={handleDeleteSubCategory}
+      />
     </React.Fragment>
   )
 }

@@ -79,7 +79,7 @@ const data: DataSidebarType = {
           url: PATH.DASHBOARD_USERS,
         },
         {
-          title: 'Thêm người dùng',
+          title: 'Thêm người dùng mới',
           url: PATH.DASHBOARD_USERS_NEW,
         },
       ],
@@ -92,6 +92,10 @@ const data: DataSidebarType = {
         {
           title: 'Tất cả danh mục',
           url: PATH.DASHBOARD_CATEGORIES,
+        },
+        {
+          title: 'Thêm danh mục mới',
+          url: PATH.DASHBOARD_CATEGORIES_NEW,
         },
       ],
       onlyAdminAndManager: true,
@@ -122,7 +126,7 @@ const data: DataSidebarType = {
           url: PATH.DASHBOARD_PRODUCTS,
         },
         {
-          title: 'Thêm sản phẩm',
+          title: 'Thêm sản phẩm mới',
           url: PATH.DASHBOARD_PRODUCTS_NEW,
         },
       ],
