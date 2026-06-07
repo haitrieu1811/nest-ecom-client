@@ -1,6 +1,6 @@
-import Link from 'next/link'
-
+import DashboardFooter from '@/app/(dashboard)/_components/dashboard-footer'
 import DashboardSidebar from '@/app/(dashboard)/_components/dashboard-sidebar'
+import ModeToggle from '@/components/mode-toggle'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,9 +11,6 @@ import {
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
-import PATH from '@/constants/path'
-import ModeToggle from '@/components/mode-toggle'
-import DashboardFooter from '@/app/(dashboard)/_components/dashboard-footer'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -27,9 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink asChild>
-                    <Link href={PATH.DASHBOARD}>Dashboard</Link>
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Build Your Application</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
@@ -40,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
           <ModeToggle />
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-4">{children}</div>
         <DashboardFooter />
       </SidebarInset>
     </SidebarProvider>

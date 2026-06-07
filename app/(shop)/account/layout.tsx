@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start space-x-8 py-8">
+    <div className="flex items-start space-x-4 py-4">
       <AccountSidebar />
       <div className="flex-1">{children}</div>
     </div>

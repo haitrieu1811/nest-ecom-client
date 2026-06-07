@@ -3,7 +3,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { vi } from 'date-fns/locale'
 import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
@@ -47,18 +47,23 @@ export const brandColumns: ColumnDef<BrandIncludeTranslationsType>[] = [
     accessorKey: 'name',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Tên" />,
     cell: ({ row }) => (
-      <Link href={PATH.DASHBOARD_BRANDS_DETAIL(row.original.id)} className="flex items-center">
+      <Link href={PATH.DASHBOARD_BRANDS_DETAIL(row.original.id)} className="flex items-center hover:underline">
         <Avatar>
           <AvatarImage src={row.original.logo || ''} alt={row.original.name} />
           <AvatarFallback>{row.original.name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <span className="ml-2">{row.original.name}</span>
+        <span className="ml-2 font-medium line-clamp-2 wrap-break-word max-w-[250px]">{row.original.name}</span>
       </Link>
     ),
   },
   {
     accessorKey: 'description',
     header: 'Mô tả',
+    cell: ({ row }) => (
+      <div className="line-clamp-2 max-w-[300px] wrap-break-word text-muted-foreground">
+        {row.original.description || '—'}
+      </div>
+    ),
   },
   {
     accessorKey: 'createdAt',

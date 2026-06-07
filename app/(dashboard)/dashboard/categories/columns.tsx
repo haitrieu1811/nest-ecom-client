@@ -3,10 +3,12 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { vi } from 'date-fns/locale'
 import { MoreHorizontal } from 'lucide-react'
 
+import { useCategoriesTableContext } from '@/app/(dashboard)/dashboard/categories/categories-table'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import DataTableColumnHeader from '@/components/ui/data-table-column-header'
@@ -17,11 +19,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { CategoryIncludeTranslationsType } from '@/schemas/category.schema'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useCategoriesTableContext } from '@/app/(dashboard)/dashboard/categories/categories-table'
-import Link from 'next/link'
 import PATH from '@/constants/path'
+import { CategoryIncludeTranslationsType } from '@/schemas/category.schema'
+import Link from 'next/link'
 
 export const categoryColumns: ColumnDef<CategoryIncludeTranslationsType>[] = [
   {
@@ -47,18 +47,23 @@ export const categoryColumns: ColumnDef<CategoryIncludeTranslationsType>[] = [
     accessorKey: 'name',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Tên" />,
     cell: ({ row }) => (
-      <Link href={PATH.DASHBOARD_CATEGORIES_DETAIL(row.original.id)} className="flex items-center">
+      <Link href={PATH.DASHBOARD_CATEGORIES_DETAIL(row.original.id)} className="flex items-center hover:underline">
         <Avatar>
           <AvatarImage src={row.original.logo || ''} alt={row.original.name} />
           <AvatarFallback>{row.original.name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <span className="ml-2">{row.original.name}</span>
+        <span className="ml-2 font-medium line-clamp-2 break-words max-w-[250px]">{row.original.name}</span>
       </Link>
     ),
   },
   {
     accessorKey: 'description',
     header: 'Mô tả',
+    cell: ({ row }) => (
+      <div className="line-clamp-2 max-w-[300px] break-words text-muted-foreground">
+        {row.original.description || '—'}
+      </div>
+    ),
   },
   {
     accessorKey: 'createdAt',

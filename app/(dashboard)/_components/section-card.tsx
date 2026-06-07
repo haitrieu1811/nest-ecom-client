@@ -1,7 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { TrendingDown, TrendingUp } from 'lucide-react'
-import React from 'react'
 
 type SectionCardProps = {
   title: string

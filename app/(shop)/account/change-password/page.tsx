@@ -13,7 +13,7 @@ export default function ChangePasswordPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Thay đổi mật khẩu</CardTitle>
+        <CardTitle className="text-xl">Thay đổi mật khẩu</CardTitle>
         <CardDescription>Cập nhật mật khẩu của bạn để bảo vệ tài khoản và thông tin cá nhân.</CardDescription>
       </CardHeader>
       <CardContent>

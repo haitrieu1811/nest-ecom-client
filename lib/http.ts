@@ -128,7 +128,7 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
     else if (res.status === UNAUTHORIZED_ERROR_STATUS) {
       if (isBrowser) {
         if (!clientLogoutRequest) {
-          clientLogoutRequest = fetch(LOGOUT_API_ENDPOINT, {
+          clientLogoutRequest = fetch(`${envConfig.NEXT_PUBLIC_API_URL}/${normalizePath(LOGOUT_API_ENDPOINT)}`, {
             method: 'POST',
             body: null,
             headers: {
@@ -138,6 +138,7 @@ const request = async <Response>(path: string, method: 'GET' | 'PUT' | 'POST' | 
         }
         try {
           await clientLogoutRequest
+          clearAuthFromLS()
         } finally {
           clientLogoutRequest = null
         }

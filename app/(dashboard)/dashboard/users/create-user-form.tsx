@@ -111,20 +111,21 @@ export default function CreateUserForm({ userData, onCreateSuccess, onUpdateSucc
   }, [userData, form])
 
   const onSubmit = form.handleSubmit(async (data) => {
+    let avatar = data.avatar
     if (avatarFile) {
       const formData = new FormData()
       formData.append('files', avatarFile)
       const res = await uploadImagesMutation.mutateAsync(formData)
-      const imageUrl = res.payload.data[0].url
-      form.setValue('avatar', imageUrl)
+      avatar = res.payload.data[0].url
     }
+    const body = { ...data, avatar }
     if (userData) {
       updateUserMutation.mutate({
-        body: data,
+        body,
         userId: userData.id,
       })
     } else {
-      createUserMutation.mutate(data)
+      createUserMutation.mutate(body)
     }
   })
 
@@ -132,9 +133,12 @@ export default function CreateUserForm({ userData, onCreateSuccess, onUpdateSucc
     <form className="space-y-7" onSubmit={onSubmit}>
       <InputAvatar
         file={avatarFile}
-        defaultAvatar={userData?.avatar}
+        defaultAvatar={form.watch('avatar')}
         onChange={(file) => setAvatarFile(file)}
         onCancel={() => setAvatarFile(null)}
+        onRemoveDefault={() => form.setValue('avatar', null, { shouldValidate: true })}
+        title="Ảnh đại diện người dùng"
+        description="Ảnh đại diện hiển thị của tài khoản thành viên."
       />
       <FieldGroup>
         <div className="grid grid-cols-12 gap-4">

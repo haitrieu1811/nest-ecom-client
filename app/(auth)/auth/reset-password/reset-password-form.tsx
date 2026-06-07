@@ -75,29 +75,37 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
   })
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
-      <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Đặt lại mật khẩu</CardTitle>
-          <CardDescription>Vui lòng nhập email của bạn và làm theo hướng dẫn để đặt lại mật khẩu</CardDescription>
+    <div className={cn('flex flex-col gap-4', className)} {...props}>
+      <Card className="relative overflow-hidden border-border/60 bg-card/95 shadow-xl shadow-black/5 backdrop-blur-sm">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-r from-primary/20 via-primary/5 to-transparent" />
+        <CardHeader className="relative space-y-2 pb-4 text-center">
+          <CardTitle className="text-2xl font-extrabold tracking-tight">Đặt lại mật khẩu</CardTitle>
+          <CardDescription className="text-[15px]">
+            Vui lòng nhập email và mã xác nhận để tạo mật khẩu mới cho tài khoản của bạn.
+          </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
           <form onSubmit={onSubmit}>
-            <FieldGroup>
+            <FieldGroup className="space-y-3">
               <Controller
                 control={form.control}
                 name="email"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <FieldLabel htmlFor="email" className="text-sm font-semibold">
+                      Email
+                    </FieldLabel>
                     <Input
                       {...field}
                       aria-invalid={fieldState.invalid}
                       id="email"
                       type="email"
                       placeholder="m@example.com"
+                      className="h-11 rounded-lg border-border/70 bg-background/80"
                     />
-                    <FieldDescription>Chúng tôi sẽ gửi mã xác nhận đến email này</FieldDescription>
+                    <FieldDescription className="text-xs leading-relaxed">
+                      Chúng tôi sẽ gửi mã xác nhận đến email này.
+                    </FieldDescription>
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
@@ -108,12 +116,15 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <div className="flex items-center justify-between">
-                      <FieldLabel htmlFor="otp-verification">Mã xác nhận</FieldLabel>
+                      <FieldLabel htmlFor="otp-verification" className="text-sm font-semibold">
+                        Mã xác nhận
+                      </FieldLabel>
                       <Button
                         type="button"
                         disabled={sendOTPMutation.isPending}
                         variant="outline"
                         size="xs"
+                        className="rounded-md border-border/70 bg-background/80 font-medium"
                         onClick={handleSendOTP}
                       >
                         {sendOTPMutation.isPending && <Spinner />}
@@ -121,8 +132,8 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
                         Gửi mã
                       </Button>
                     </div>
-                    <InputOTP {...field} maxLength={6} id="otp-verification">
-                      <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
+                    <InputOTP {...field} maxLength={6} id="otp-verification" containerClassName="w-full justify-center">
+                      <InputOTPGroup className="mx-auto grid w-full max-w-sm grid-cols-6 gap-2 rounded-none *:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-full *:data-[slot=input-otp-slot]:rounded-lg *:data-[slot=input-otp-slot]:border *:data-[slot=input-otp-slot]:border-border/70 *:data-[slot=input-otp-slot]:bg-background/80 *:data-[slot=input-otp-slot]:text-lg *:data-[slot=input-otp-slot]:font-semibold *:data-[slot=input-otp-slot]:shadow-sm *:data-[slot=input-otp-slot]:transition-all *:data-[slot=input-otp-slot]:data-[active=true]:-translate-y-0.5 *:data-[slot=input-otp-slot]:data-[active=true]:shadow-md">
                         <InputOTPSlot index={0} />
                         <InputOTPSlot index={1} />
                         <InputOTPSlot index={2} />
@@ -140,13 +151,16 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
                 name="password"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="password">Mật khẩu</FieldLabel>
+                    <FieldLabel htmlFor="password" className="text-sm font-semibold">
+                      Mật khẩu
+                    </FieldLabel>
                     <Input
                       {...field}
                       aria-invalid={fieldState.invalid}
                       id="password"
                       type="password"
                       placeholder="********"
+                      className="h-11 rounded-lg border-border/70 bg-background/80"
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
@@ -157,33 +171,51 @@ export default function ResetPasswordForm({ className, ...props }: React.Compone
                 name="confirmPassword"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="confirmPassword">Xác nhận mật khẩu</FieldLabel>
+                    <FieldLabel htmlFor="confirmPassword" className="text-sm font-semibold">
+                      Xác nhận mật khẩu
+                    </FieldLabel>
                     <Input
                       {...field}
                       aria-invalid={fieldState.invalid}
                       id="confirmPassword"
                       type="password"
                       placeholder="********"
+                      className="h-11 rounded-lg border-border/70 bg-background/80"
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
               <Field>
-                <Button type="submit" disabled={resetPasswordMutation.isPending}>
+                <Button
+                  type="submit"
+                  disabled={resetPasswordMutation.isPending}
+                  className="h-11 w-full rounded-lg bg-linear-to-r from-primary to-primary/85 font-semibold shadow-md shadow-primary/20 hover:from-primary/90 hover:to-primary"
+                >
                   {resetPasswordMutation.isPending && <Spinner className="mr-2" />}
                   Đặt lại mật khẩu
                 </Button>
-                <FieldDescription className="text-center">
-                  Đã nhớ mật khẩu? <Link href={PATH.LOGIN}>Đăng nhập</Link>
+                <FieldDescription className="pt-1 text-center text-sm">
+                  Đã nhớ mật khẩu?{' '}
+                  <Link href={PATH.LOGIN} className="font-semibold text-primary underline-offset-4 hover:underline">
+                    Đăng nhập
+                  </Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center">
-        Bằng cách tiếp tục, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a>.
+      <FieldDescription className="px-4 text-center text-xs leading-relaxed md:px-6">
+        Bằng cách tiếp tục, bạn đồng ý với{' '}
+        <a href="#" className="font-medium text-primary underline-offset-4 hover:underline">
+          Điều khoản dịch vụ
+        </a>{' '}
+        và{' '}
+        <a href="#" className="font-medium text-primary underline-offset-4 hover:underline">
+          Chính sách bảo mật
+        </a>
+        .
       </FieldDescription>
     </div>
   )

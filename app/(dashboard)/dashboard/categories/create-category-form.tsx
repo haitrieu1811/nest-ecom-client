@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/incompatible-library */
+
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -99,27 +101,30 @@ export default function CreateCategoryForm({
     createCategoryMutation.isPending || updateCategoryMutation.isPending || uploadImagesMutation.isPending
 
   const onSubmit = form.handleSubmit(async (data) => {
+    let logo = data.logo
     if (file) {
       const formData = new FormData()
       formData.append('files', file)
       const res = await uploadImagesMutation.mutateAsync(formData)
-      const imageUrl = res.payload.data[0].url
-      form.setValue('logo', imageUrl)
+      logo = res.payload.data[0].url
     }
+    const body = { ...data, logo }
     if (categoryData) {
-      updateCategoryMutation.mutate({ body: data, categoryId: categoryData.id })
-      return
+      return updateCategoryMutation.mutate({ body, categoryId: categoryData.id })
     }
-    createCategoryMutation.mutate(data)
+    createCategoryMutation.mutate(body)
   })
 
   return (
     <form className="space-y-4" onSubmit={onSubmit}>
       <InputAvatar
         file={file}
-        defaultAvatar={form.getValues('logo')}
+        defaultAvatar={form.watch('logo')}
         onChange={setFile}
         onCancel={() => setFile(null)}
+        onRemoveDefault={() => form.setValue('logo', null, { shouldValidate: true })}
+        title="Logo danh mục"
+        description="PNG, JPG hoặc WEBP. Logo hiển thị của danh mục sản phẩm."
       />
       <FieldGroup>
         <Controller

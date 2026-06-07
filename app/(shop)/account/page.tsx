@@ -12,7 +12,7 @@ export default function AccountPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Hồ sơ của tôi</CardTitle>
+        <CardTitle className="text-xl">Hồ sơ của tôi</CardTitle>
         <CardDescription>Quản lý thông tin cá nhân của bạn</CardDescription>
       </CardHeader>
       <CardContent>

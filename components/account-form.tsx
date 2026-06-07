@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/incompatible-library */
+
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -41,7 +43,7 @@ export default function AccountForm() {
 
   React.useEffect(() => {
     if (profile) {
-      form.setValues({
+      form.reset({
         name: profile.name,
         phoneNumber: profile.phoneNumber,
         avatar: profile.avatar,
@@ -63,7 +65,7 @@ export default function AccountForm() {
   const isPending = uploadImagesMutation.isPending || updateProfileMutation.isPending
 
   const onSubmit = form.handleSubmit(async (data) => {
-    let avatarUrl = profile?.avatar || null
+    let avatarUrl = data.avatar
     if (avatarFile) {
       const formData = new FormData()
       formData.append('files', avatarFile)
@@ -78,8 +80,12 @@ export default function AccountForm() {
       <InputAvatar
         file={avatarFile}
         profile={profile}
+        defaultAvatar={form.watch('avatar')}
         onChange={(file) => setAvatarFile(file)}
         onCancel={() => setAvatarFile(null)}
+        onRemoveDefault={() => form.setValue('avatar', null, { shouldValidate: true })}
+        title="Ảnh cá nhân"
+        description="Ảnh đại diện tài khoản cá nhân của bạn."
       />
       <FieldGroup>
         <Controller

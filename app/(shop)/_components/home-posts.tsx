@@ -80,16 +80,16 @@ export default function HomePosts() {
             </div>
 
             <Badge variant="secondary">{featuredPost.category}</Badge>
-            <h3 className="line-clamp-2 text-lg font-semibold leading-6">{featuredPost.title}</h3>
-            <p className="line-clamp-3 text-sm text-muted-foreground">{featuredPost.excerpt}</p>
+            <h3 className="line-clamp-2 text-xl font-semibold leading-7 md:text-2xl md:leading-8">{featuredPost.title}</h3>
+            <p className="line-clamp-3 text-base text-muted-foreground">{featuredPost.excerpt}</p>
 
-            <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-1">
-                <CalendarDaysIcon className="size-3.5" />
+                <CalendarDaysIcon className="size-4" />
                 {featuredPost.date}
               </span>
               <span className="inline-flex items-center gap-1">
-                <Clock3Icon className="size-3.5" />
+                <Clock3Icon className="size-4" />
                 {featuredPost.readTime}
               </span>
             </div>
@@ -114,16 +114,16 @@ export default function HomePosts() {
                 <Badge variant="outline" className="font-normal">
                   {post.category}
                 </Badge>
-                <h4 className="line-clamp-2 text-sm font-semibold leading-5">{post.title}</h4>
-                <p className="line-clamp-2 text-xs text-muted-foreground">{post.excerpt}</p>
+                <h4 className="line-clamp-2 text-base font-semibold leading-6">{post.title}</h4>
+                <p className="line-clamp-2 text-sm text-muted-foreground">{post.excerpt}</p>
 
-                <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1">
-                    <CalendarDaysIcon className="size-3" />
+                    <CalendarDaysIcon className="size-3.5" />
                     {post.date}
                   </span>
                   <span className="inline-flex items-center gap-1">
-                    <Clock3Icon className="size-3" />
+                    <Clock3Icon className="size-3.5" />
                     {post.readTime}
                   </span>
                 </div>

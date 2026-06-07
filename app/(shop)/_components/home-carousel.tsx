@@ -16,8 +16,8 @@ const CAROUSEL_ITEMS = [
     href: PATH.CATEGORIES,
     Icon: FlameIcon,
     gradient:
-      'bg-gradient-to-br from-sky-200 via-cyan-100 to-emerald-200 dark:from-sky-950 dark:via-cyan-900 dark:to-emerald-950',
-    iconColor: 'text-sky-600 dark:text-sky-300',
+      'bg-gradient-to-br from-pink-100 via-rose-100 to-amber-100 dark:from-pink-950/40 dark:via-rose-900/50 dark:to-amber-900/40',
+    iconColor: 'text-rose-500 dark:text-rose-400',
   },
   {
     title: 'Sản phẩm tuyển chọn cho phong cách riêng',
@@ -26,8 +26,8 @@ const CAROUSEL_ITEMS = [
     href: PATH.CATEGORIES,
     Icon: GemIcon,
     gradient:
-      'bg-gradient-to-br from-amber-200 via-orange-100 to-rose-200 dark:from-amber-950 dark:via-orange-900 dark:to-rose-950',
-    iconColor: 'text-orange-600 dark:text-orange-300',
+      'bg-gradient-to-br from-violet-100 via-indigo-100 to-cyan-100 dark:from-violet-950/40 dark:via-indigo-900/50 dark:to-cyan-900/40',
+    iconColor: 'text-indigo-600 dark:text-indigo-400',
   },
   {
     title: 'An tâm mua sắm với dịch vụ tận tâm',
@@ -36,8 +36,8 @@ const CAROUSEL_ITEMS = [
     href: PATH.HOME,
     Icon: ShieldCheckIcon,
     gradient:
-      'bg-gradient-to-br from-lime-200 via-emerald-100 to-teal-200 dark:from-lime-950 dark:via-emerald-900 dark:to-teal-950',
-    iconColor: 'text-emerald-700 dark:text-emerald-300',
+      'bg-gradient-to-br from-emerald-100 via-teal-100 to-blue-100 dark:from-emerald-950/40 dark:via-teal-900/50 dark:to-blue-900/40',
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
   },
 ] as const
 
@@ -75,8 +75,8 @@ export default function HomeCarousel() {
                 </div>
               </div>
 
-              <div className="pointer-events-none absolute -top-24 -right-16 size-56 rounded-full bg-white/35 blur-3xl dark:bg-white/10" />
-              <div className="pointer-events-none absolute -bottom-20 -left-14 size-52 rounded-full bg-white/25 blur-3xl dark:bg-white/10" />
+              <div className="pointer-events-none absolute -top-24 -right-16 size-56 rounded-full bg-white/55 blur-3xl dark:bg-white/15" />
+              <div className="pointer-events-none absolute -bottom-20 -left-14 size-52 rounded-full bg-white/45 blur-3xl dark:bg-white/15" />
             </div>
           </CarouselItem>
         ))}

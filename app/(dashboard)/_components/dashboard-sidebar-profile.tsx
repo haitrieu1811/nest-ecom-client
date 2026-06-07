@@ -35,12 +35,12 @@ export default function DashboardSidebarProfile({ profile }: { profile: ProfileI
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={profile.avatar ?? ''} alt={profile.name ?? ''} />
+                <AvatarImage src={profile.avatar ?? undefined} alt={profile.name ?? ''} />
                 <AvatarFallback className="rounded-lg">
                   {profile.email ? profile.email.slice(0, 2).toUpperCase() : 'UN'}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="grid flex-1 text-left text-xs leading-tight">
                 <span className="truncate font-medium">{profile.name}</span>
                 <span className="truncate text-xs">{profile.email}</span>
               </div>
@@ -56,7 +56,7 @@ export default function DashboardSidebarProfile({ profile }: { profile: ProfileI
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={profile.avatar ?? ''} alt={profile.name ?? ''} />
+                  <AvatarImage src={profile.avatar ?? undefined} alt={profile.name ?? ''} />
                   <AvatarFallback className="rounded-lg">
                     {profile.email ? profile.email.slice(0, 2).toUpperCase() : 'UN'}
                   </AvatarFallback>
@@ -67,23 +67,23 @@ export default function DashboardSidebarProfile({ profile }: { profile: ProfileI
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-sidebar-border/60" />
             <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
+              <DropdownMenuItem asChild className="cursor-pointer">
                 <Link href={PATH.DASHBOARD_PROFILE}>
-                  <BadgeCheck />
-                  Tài khoản
+                  <BadgeCheck className="size-4 text-muted-foreground" />
+                  <span>Tài khoản</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <SettingsIcon />
-                Cài đặt
+              <DropdownMenuItem className="cursor-pointer">
+                <SettingsIcon className="size-4 text-muted-foreground" />
+                <span>Cài đặt</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Đăng xuất
+            <DropdownMenuSeparator className="bg-sidebar-border/60" />
+            <DropdownMenuItem className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+              <LogOut className="size-4" />
+              <span>Đăng xuất</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -12,7 +12,7 @@ export default function useCategories(props?: UseCategoriesProps) {
   const getCategoriesQuery = useQuery({
     queryKey: ['get-categories', props?.query],
     queryFn: () => categoryApi.getList(props?.query),
-    enabled: props?.enabled || true,
+    enabled: props?.enabled ?? true,
   })
 
   const categories = getCategoriesQuery.data?.payload.data || []

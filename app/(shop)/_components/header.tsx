@@ -2,18 +2,16 @@
 
 import { ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
 
 import HeaderAccount from '@/app/(shop)/_components/header-account'
-import ModeToggle from '@/components/mode-toggle'
 import { Button } from '@/components/ui/button'
-import { ROLE_NAME } from '@/constants/auth.constant'
+import ModeToggle from '@/components/mode-toggle'
 import PATH from '@/constants/path'
 import useIsClient from '@/hooks/use-is-client'
 import { useAppStore } from '@/providers/app.provider'
 
 export default function Header() {
-  const { isAuthenticated, profile } = useAppStore()
+  const { isAuthenticated } = useAppStore()
   const isClient = useIsClient()
   return (
     <header className="border-b bg-card sticky top-0 z-50 inset-x-0">
@@ -32,22 +30,25 @@ export default function Header() {
         </Link>
         <div className="flex items-center space-x-4">
           {!isAuthenticated && isClient && (
-            <React.Fragment>
-              <Link href={PATH.LOGIN}>Đăng nhập</Link>
-              <Link href={PATH.REGISTER}>Đăng ký</Link>
-            </React.Fragment>
-          )}
-          {isAuthenticated && isClient && (
-            <div className="flex items-center space-x-4">
-              {/* Chỉ hiển thị nút Dashboard nếu người dùng không phải là CLIENT */}
-              {profile && profile.role.name !== ROLE_NAME.CLIENT && (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href={PATH.DASHBOARD}>Trang quản trị</Link>
-                </Button>
-              )}
-              <HeaderAccount />
+            <div className="flex items-center gap-2">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="rounded-full border-primary/25 px-4 font-semibold text-foreground hover:border-primary/50 hover:bg-primary/10"
+              >
+                <Link href={PATH.LOGIN}>Đăng nhập</Link>
+              </Button>
+              <Button
+                asChild
+                size="sm"
+                className="rounded-full bg-linear-to-r from-primary via-primary to-primary/80 px-4 font-semibold shadow-md shadow-primary/25 hover:from-primary/90 hover:to-primary"
+              >
+                <Link href={PATH.REGISTER}>Đăng ký</Link>
+              </Button>
             </div>
           )}
+          {isAuthenticated && isClient && <HeaderAccount />}
           <ModeToggle />
         </div>
       </div>

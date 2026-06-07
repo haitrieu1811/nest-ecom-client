@@ -36,6 +36,7 @@ const PATH = {
   DASHBOARD_SETTINGS: '/dashboard/settings',
   DASHBOARD_PRODUCTS: '/dashboard/products',
   DASHBOARD_PRODUCTS_NEW: '/dashboard/products/new',
+  DASHBOARD_PRODUCTS_DETAIL: (productId: number) => `/dashboard/products/${productId}`,
 } as const
 
 export default PATH

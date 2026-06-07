@@ -9,7 +9,7 @@ import { CategoryIncludeTranslationsType } from '@/schemas/category.schema'
 
 export default function HomeCategories({ categories }: { categories: CategoryIncludeTranslationsType[] }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+    <div className="grid grid-cols-8 gap-3">
       {categories.map((category) => (
         <Link
           key={category.id}
@@ -20,16 +20,16 @@ export default function HomeCategories({ categories }: { categories: CategoryInc
 
           <div className="relative flex min-h-36 flex-col items-center justify-center gap-3">
             <div className="rounded-2xl border bg-background/70 p-1.5 shadow-sm backdrop-blur-sm transition-transform duration-300 group-hover:scale-105 dark:bg-black/20">
-              <Avatar className="size-14 md:size-16">
+              <Avatar className="size-12 md:size-14">
                 <AvatarImage src={category.logo || undefined} alt={category.name} className="object-cover" />
                 <AvatarFallback className="font-semibold">{category.name.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>
             </div>
 
-            <span className="line-clamp-2 text-sm font-semibold leading-5 md:text-base">{category.name}</span>
+            <span className="line-clamp-2 text-xs font-semibold leading-5 md:text-sm">{category.name}</span>
 
-            <span className="inline-flex items-center gap-1 rounded-full border bg-background/60 px-2 py-1 text-[11px] text-muted-foreground opacity-80 backdrop-blur-sm transition group-hover:opacity-100 dark:bg-black/20">
-              <SparklesIcon className="size-3" />
+            <span className="inline-flex items-center gap-1 rounded-full border bg-background/60 px-2 py-1 text-[10px] text-muted-foreground opacity-80 backdrop-blur-sm transition group-hover:opacity-100 dark:bg-black/20">
+              <SparklesIcon className="size-2.5" />
               Khám phá
             </span>
           </div>
