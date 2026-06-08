@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 type InputNumberProps = Omit<React.ComponentProps<'input'>, 'type' | 'value' | 'onChange'> & {
   value?: number | string | null
   onChange?: (value: number | undefined) => void
+  max?: number
 }
 
 /**
@@ -32,7 +33,7 @@ function parseNumber(formatted: string): number | undefined {
 }
 
 const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
-  ({ className, value, onChange, onBlur, ...props }, ref) => {
+  ({ className, value, onChange, onBlur, max, ...props }, ref) => {
     const [displayValue, setDisplayValue] = React.useState<string>(() => {
       if (value === null || value === undefined || value === '') return ''
       return formatNumber(String(value))
@@ -59,9 +60,17 @@ const InputNumber = React.forwardRef<HTMLInputElement, InputNumberProps>(
       // Chỉ cho phép chữ số và dấu chấm (dấu ngăn cách) — dùng regex để validate
       if (raw !== '' && !/^[\d.]*$/.test(raw)) return
 
+      const parsed = parseNumber(raw)
+      if (parsed !== undefined && max !== undefined && parsed > max) {
+        const formattedMax = formatNumber(String(max))
+        setDisplayValue(formattedMax)
+        onChange?.(max)
+        return
+      }
+
       const formatted = formatNumber(raw)
       setDisplayValue(formatted)
-      onChange?.(parseNumber(formatted))
+      onChange?.(parsed)
     }
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {

@@ -170,8 +170,8 @@ export const GetProductsQuerySchema = PaginationQuerySchema.extend({
     .optional(),
   sortBy: z
     .enum([SORT_BY.NAME, SORT_BY.BASE_PRICE, SORT_BY.CREATED_AT], 'Error.SortByMustBeNameOrBasePriceOrCreatedAt')
-    .default(SORT_BY.CREATED_AT),
-  orderBy: z.enum([ORDER_BY.ASC, ORDER_BY.DESC], 'Error.OrderByMustBeAscOrDesc').default(ORDER_BY.DESC),
+    .optional(),
+  orderBy: z.enum([ORDER_BY.ASC, ORDER_BY.DESC], 'Error.OrderByMustBeAscOrDesc').optional(),
 })
 
 // Query params dành cho admin, manage, seller

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import InputPassword from '@/components/input-password'
 import { Spinner } from '@/components/ui/spinner'
 import PATH from '@/constants/path'
 import { clearAuthFromLS, cn, handleErrorFromAPI } from '@/lib/utils'
@@ -71,24 +72,23 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
   }
 
   return (
-    <div className={cn('flex flex-col gap-4', className)} {...props}>
-      <Card className="relative overflow-hidden border border-border/60 bg-card/80 shadow-2xl shadow-primary/5 backdrop-blur-md rounded-2xl p-2 sm:p-4">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-r from-primary/10 via-primary/5 to-transparent" />
-        <CardHeader className="relative space-y-2 pb-4 text-center">
+    <div className={cn('flex flex-col gap-4 w-full max-w-[360px] mx-auto', className)} {...props}>
+      <Card className="relative overflow-hidden border border-border/60 bg-card/80 shadow-md backdrop-blur-md rounded-xl p-4 sm:p-5">
+        <CardHeader className="relative space-y-1.5 pb-3 text-center">
           <CardTitle className="text-2xl font-extrabold tracking-tight">Chào mừng trở lại! 👋</CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardDescription className="text-xs text-muted-foreground">
             Nhập thông tin đăng nhập để tiếp tục mua sắm cùng Nest Ecom.
           </CardDescription>
         </CardHeader>
         <CardContent className="relative">
           <form onSubmit={onSubmit}>
-            <FieldGroup className="space-y-4">
+            <FieldGroup className="space-y-3">
               <Field>
                 <Button
                   variant="outline"
                   type="button"
                   onClick={handleLoginWithGoogle}
-                  className="h-11 w-full rounded-xl border border-border/70 bg-background/50 font-semibold shadow-xs hover:bg-muted/70 flex items-center justify-center gap-2.5 transition-all duration-200"
+                  className="h-10 w-full rounded-lg border border-border/70 bg-background/50 font-semibold shadow-xs hover:bg-muted/70 flex items-center justify-center gap-2.5 transition-all duration-200"
                 >
                   <svg className="size-4" viewBox="0 0 24 24">
                     <path
@@ -131,7 +131,7 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
                       id="email"
                       type="email"
                       placeholder="name@example.com"
-                      className="h-11 rounded-xl border border-border/70 bg-background/50 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200"
+                      className="h-10 rounded-lg border border-border/70 bg-background/50 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200"
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
@@ -156,28 +156,27 @@ export default function LoginForm({ className, ...props }: React.ComponentProps<
                         Quên mật khẩu?
                       </Link>
                     </div>
-                    <Input
+                    <InputPassword
                       {...field}
                       aria-invalid={fieldState.invalid}
                       id="password"
-                      type="password"
                       placeholder="••••••••"
-                      className="h-11 rounded-xl border border-border/70 bg-background/50 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200"
+                      className="h-10 rounded-lg border border-border/70 bg-background/50 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary transition-all duration-200"
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
-              <Field className="pt-2">
+              <Field className="pt-1">
                 <Button
                   type="submit"
                   disabled={loginMutation.isPending}
-                  className="h-11 w-full rounded-xl bg-linear-to-r from-primary to-indigo-600 font-semibold text-white shadow-md shadow-primary/20 hover:from-primary/95 hover:to-indigo-500 hover:shadow-lg transition-all duration-200"
+                  className="h-10 w-full rounded-lg bg-primary font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 transition-all duration-200"
                 >
                   {loginMutation.isPending && <Spinner className="mr-2" />}
                   Đăng nhập
                 </Button>
-                <FieldDescription className="pt-3 text-center text-sm">
+                <FieldDescription className="pt-2 text-center text-sm">
                   Chưa có tài khoản?{' '}
                   <Link href={PATH.REGISTER} className="font-semibold text-primary underline-offset-4 hover:underline">
                     Đăng ký ngay

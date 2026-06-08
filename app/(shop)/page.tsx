@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import PATH from '@/constants/path'
 import FlashSale from '@/app/(shop)/_components/flash-sale'
+import { productApi } from '@/apis/product.api'
 
 export const metadata: Metadata = {
   title: 'Trang chủ',
@@ -17,8 +18,10 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const getCategoriesRes = await categoryApi.getList()
+  const [getCategoriesRes, getProductsRes] = await Promise.all([categoryApi.getList(), productApi.getList()])
   const categories = getCategoriesRes.payload.data
+  const products = getProductsRes.payload.data
+
   return (
     <div className="grid gap-4 py-4">
       <HomeCarousel />
@@ -35,7 +38,7 @@ export default async function HomePage() {
           <HomeCategories categories={categories} />
         </CardContent>
       </Card>
-      <FlashSale />
+      <FlashSale products={products} />
       <HomePosts />
     </div>
   )

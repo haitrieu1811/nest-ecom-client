@@ -182,3 +182,11 @@ export const extractIdFromNameId = (nameId: string) => {
   const id = parseInt(idPart, 10)
   return isNaN(id) ? null : id
 }
+
+export const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    maximumFractionDigits: 0,
+  }).format(value)
+}

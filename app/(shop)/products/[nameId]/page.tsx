@@ -1,5 +1,3 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
 import {
   ChevronRightIcon,
   Clock3Icon,
@@ -8,55 +6,23 @@ import {
   ShieldCheckIcon,
   StarIcon,
   StoreIcon,
-  TruckIcon,
   UsersIcon,
 } from 'lucide-react'
+import { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
+import { productApi } from '@/apis/product.api'
+import ProductDescription from '@/app/(shop)/products/[nameId]/product-description'
+import ProductDetail from '@/app/(shop)/products/[nameId]/product-detail'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-
-export const metadata: Metadata = {
-  title: 'Chi tiết sản phẩm',
-  description: 'Xem chi tiết sản phẩm',
-}
-
-const RELATED_PRODUCTS = [
-  {
-    id: 1,
-    name: 'Tai nghe Bluetooth Pro X1',
-    price: '490.000đ',
-    oldPrice: '790.000đ',
-    sold: 'Đã bán 1.2k',
-    href: '/products/tai-nghe-bluetooth-pro-x1-i-101',
-  },
-  {
-    id: 2,
-    name: 'Tai nghe TWS Noise Cancel N5',
-    price: '690.000đ',
-    oldPrice: '990.000đ',
-    sold: 'Đã bán 860',
-    href: '/products/tai-nghe-tws-noise-cancel-n5-i-102',
-  },
-  {
-    id: 3,
-    name: 'Loa bluetooth mini bass sâu',
-    price: '520.000đ',
-    oldPrice: '740.000đ',
-    sold: 'Đã bán 540',
-    href: '/products/loa-bluetooth-mini-bass-sau-i-103',
-  },
-  {
-    id: 4,
-    name: 'Sạc nhanh GaN 65W',
-    price: '360.000đ',
-    oldPrice: '590.000đ',
-    sold: 'Đã bán 1.4k',
-    href: '/products/sac-nhanh-gan-65w-i-104',
-  },
-] as const
+import PATH from '@/constants/path'
+import { extractIdFromNameId, formatCurrency } from '@/lib/utils'
+import { ProductDetailType } from '@/schemas/product.schema'
 
 const RELATED_POSTS = [
   {
@@ -109,144 +75,114 @@ const REVIEWS = [
   },
 ] as const
 
-const parseProductName = (nameId: string) => {
-  const [namePart] = nameId.split('-i-')
-  return namePart
-    .split('-')
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-}
-
 type ProductDetailPageProps = {
   params: Promise<{
     nameId: string
   }>
 }
 
+export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
+  const { nameId } = await params
+  const id = extractIdFromNameId(nameId)
+  if (!id) {
+    return {
+      title: 'Sản phẩm không tìm thấy',
+      description: 'Sản phẩm không tồn tại trên hệ thống',
+    }
+  }
+
+  try {
+    const res = await productApi.getDetail(String(id))
+    const product = res.payload
+    const plainDescription = product.description.replace(/<[^>]*>/g, '').slice(0, 160)
+    return {
+      title: `${product.name} | Nest E-Commerce`,
+      description: plainDescription || 'Xem chi tiết sản phẩm và các ưu đãi tại Nest E-Commerce',
+      openGraph: {
+        title: product.name,
+        description: plainDescription,
+        images: product.thumbnail ? [product.thumbnail] : [],
+      },
+    }
+  } catch (error) {
+    console.error('Error generating metadata:', error)
+    return {
+      title: 'Sản phẩm | Nest E-Commerce',
+      description: 'Xem chi tiết sản phẩm tại Nest E-Commerce',
+    }
+  }
+}
+
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { nameId } = await params
-  const productName = parseProductName(nameId)
+  const id = extractIdFromNameId(nameId)
+  if (!id) {
+    notFound()
+  }
+
+  let product: ProductDetailType | null = null
+  let relatedProducts = []
+
+  try {
+    const res = await productApi.getDetail(String(id))
+    product = res.payload
+
+    // Fetch related products (e.g. products in same category or just list of products)
+    const categoryId = product.categoryId
+    const relatedRes = await productApi.getList({
+      page: 1,
+      limit: 10,
+    })
+    // Filter out the current product from recommendations if possible, or just take the first 4
+    relatedProducts = relatedRes.payload.data
+      .filter((p) => p.id !== product?.id && p.categoryId === categoryId)
+      .slice(0, 4)
+    if (relatedProducts.length === 0) {
+      // Fallback: fetch general list of products
+      relatedProducts = relatedRes.payload.data.filter((p) => p.id !== product?.id).slice(0, 4)
+    }
+  } catch (error) {
+    console.error('Error fetching product details:', error)
+    notFound()
+  }
+
+  if (!product) {
+    notFound()
+  }
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 py-4">
+      {/* Breadcrumbs */}
       <div className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
-        <Link href="/" className="transition-colors hover:text-foreground">
+        <Link href={PATH.HOME} className="transition-colors hover:text-foreground">
           Trang chủ
         </Link>
         <ChevronRightIcon className="size-4" />
-        <Link href="/categories" className="transition-colors hover:text-foreground">
-          Danh mục
-        </Link>
-        <ChevronRightIcon className="size-4" />
-        <span className="text-foreground">{productName}</span>
+        {product.category ? (
+          <>
+            <Link
+              href={PATH.CATEGORY_DETAIL(product.category.name, product.category.id)}
+              className="transition-colors hover:text-foreground"
+            >
+              {product.category.name}
+            </Link>
+            <ChevronRightIcon className="size-4" />
+          </>
+        ) : (
+          <>
+            <Link href={PATH.CATEGORIES} className="transition-colors hover:text-foreground">
+              Danh mục
+            </Link>
+            <ChevronRightIcon className="size-4" />
+          </>
+        )}
+        <span className="text-foreground font-medium">{product.name}</span>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-12">
-        <Card className="xl:order-2 xl:col-span-7">
-          <CardHeader>
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-red-500 text-white hover:bg-red-500">Flash Sale</Badge>
-              <Badge variant="outline">Chính hãng</Badge>
-              <Badge variant="outline">Đổi trả 7 ngày</Badge>
-            </div>
-            <CardTitle className="text-2xl font-bold">{productName}</CardTitle>
-            <CardDescription className="flex flex-wrap items-center gap-3 text-xs">
-              <span className="inline-flex items-center gap-1">
-                <StarIcon className="size-3.5 fill-amber-400 text-amber-500" />
-                4.8/5 (128 đánh giá)
-              </span>
-              <span>Đã bán 1.2k</span>
-              <span>Mã SP: NEST-PRO-X1</span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-lg border bg-muted/30 p-3">
-              <div className="flex flex-wrap items-end gap-2">
-                <p className="text-3xl font-bold text-red-600">490.000đ</p>
-                <p className="text-sm text-muted-foreground line-through">790.000đ</p>
-                <Badge className="bg-red-500 text-white hover:bg-red-500">-38%</Badge>
-              </div>
-            </div>
+      {/* Main product gallery and details block (including SKU selection) */}
+      <ProductDetail product={product} />
 
-            <div className="grid gap-2 text-sm text-muted-foreground">
-              <p className="inline-flex items-center gap-2">
-                <StoreIcon className="size-4 text-primary" />
-                Bán bởi: Nest Official Store
-              </p>
-              <p className="inline-flex items-center gap-2">
-                <TruckIcon className="size-4 text-primary" />
-                Freeship extra • Nhận hàng trong hôm nay
-              </p>
-              <p className="inline-flex items-center gap-2">
-                <ShieldCheckIcon className="size-4 text-primary" />
-                Bảo hành chính hãng 12 tháng
-              </p>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <p className="text-sm font-semibold">Phân loại</p>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm">
-                  Đen
-                </Button>
-                <Button variant="outline" size="sm">
-                  Trắng
-                </Button>
-                <Button variant="outline" size="sm">
-                  Xanh navy
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <p className="text-sm font-semibold">Số lượng</p>
-              <div className="flex items-center gap-2">
-                <Button size="icon-sm" variant="outline">
-                  -
-                </Button>
-                <div className="min-w-10 rounded-md border px-3 py-1 text-center text-sm">1</div>
-                <Button size="icon-sm" variant="outline">
-                  +
-                </Button>
-                <p className="text-xs text-muted-foreground">Còn 27 sản phẩm</p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Button size="lg" className="min-w-36">
-                Mua ngay
-              </Button>
-              <Button size="lg" variant="outline" className="min-w-36">
-                Thêm vào giỏ
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="gap-0 py-0 xl:order-1 xl:col-span-5 xl:self-start">
-          <CardContent className="p-0">
-            <div className="grid gap-2 p-3">
-              <div className="flex aspect-4/3 items-center justify-center rounded-xl border border-dashed bg-muted/40 text-sm text-muted-foreground">
-                Ảnh sản phẩm chính
-              </div>
-              <div className="grid grid-cols-5 gap-1.5">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="flex aspect-4/3 items-center justify-center rounded-md border bg-muted/30 text-[11px] text-muted-foreground"
-                  >
-                    Ảnh {index + 1}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
+      {/* Shop Info Card */}
       <Card className="border-primary/20 bg-linear-to-r from-primary/10 via-background to-background">
         <CardContent className="grid gap-4 py-5 md:grid-cols-[1fr_auto] md:items-center">
           <div className="flex flex-wrap items-start gap-3">
@@ -290,43 +226,25 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 xl:grid-cols-12">
+      {/* Product Description & Reviews & Related items */}
+      <div className="grid gap-6 items-start xl:grid-cols-12">
+        {/* Description */}
         <Card className="xl:col-span-7">
           <CardHeader>
-            <CardTitle>Mô tả sản phẩm</CardTitle>
+            <CardTitle className="text-xl">Mô tả sản phẩm</CardTitle>
             <CardDescription>
               Thông tin nổi bật và lý do sản phẩm phù hợp với nhu cầu sử dụng hàng ngày.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <p>
-              Tai nghe Bluetooth Pro X1 được thiết kế cho trải nghiệm nghe nhạc và đàm thoại ổn định cả ngày. Sản phẩm
-              hỗ trợ kết nối nhanh, độ trễ thấp và âm bass rõ ràng.
-            </p>
-            <p>
-              Phù hợp cho học tập, làm việc và giải trí, đặc biệt khi cần một thiết bị gọn nhẹ, pin lâu và độ bền cao.
-            </p>
-
-            <div className="grid gap-3 pt-1 sm:grid-cols-3">
-              <div className="rounded-lg border bg-muted/20 p-3">
-                <p className="text-xs uppercase tracking-wide">Kết nối</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">Bluetooth 5.3</p>
-              </div>
-              <div className="rounded-lg border bg-muted/20 p-3">
-                <p className="text-xs uppercase tracking-wide">Dung lượng pin</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">30 giờ</p>
-              </div>
-              <div className="rounded-lg border bg-muted/20 p-3">
-                <p className="text-xs uppercase tracking-wide">Chống nước</p>
-                <p className="mt-1 text-sm font-semibold text-foreground">IPX5</p>
-              </div>
-            </div>
+          <CardContent className="space-y-3 text-sm">
+            <ProductDescription description={product.description} />
           </CardContent>
         </Card>
 
+        {/* Reviews */}
         <Card className="xl:col-span-5">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-xl">
               <MessageSquareTextIcon className="size-5 text-primary" />
               Đánh giá sản phẩm
             </CardTitle>
@@ -372,6 +290,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           </CardContent>
         </Card>
 
+        {/* Related Products */}
         <Card className="xl:col-span-8">
           <CardHeader>
             <CardTitle>Sản phẩm cùng danh mục</CardTitle>
@@ -379,27 +298,52 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {RELATED_PRODUCTS.map((product) => (
-                <Link
-                  key={product.id}
-                  href={product.href}
-                  className="rounded-lg border p-3 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
-                >
-                  <div className="flex aspect-video items-center justify-center rounded-md border border-dashed bg-muted/40 text-xs text-muted-foreground">
-                    Ảnh sản phẩm
-                  </div>
-                  <p className="mt-2 line-clamp-2 text-center text-sm font-medium">{product.name}</p>
-                  <div className="mt-1 flex items-center justify-center gap-2">
-                    <p className="text-sm font-bold text-red-600">{product.price}</p>
-                    <p className="text-xs text-muted-foreground line-through">{product.oldPrice}</p>
-                  </div>
-                  <p className="mt-1 text-center text-xs text-muted-foreground">{product.sold}</p>
-                </Link>
-              ))}
+              {relatedProducts.map((p) => {
+                const discount =
+                  p.virtualPrice > p.basePrice ? Math.round(((p.virtualPrice - p.basePrice) / p.virtualPrice) * 100) : 0
+                return (
+                  <Link
+                    key={p.id}
+                    href={PATH.PRODUCT_DETAIL(p.name, p.id)}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border bg-background p-3 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-md"
+                  >
+                    <div className="relative aspect-square overflow-hidden rounded-xl border bg-muted/10">
+                      {p.thumbnail ? (
+                        <Image
+                          src={p.thumbnail}
+                          alt={p.name}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                          Không có ảnh
+                        </div>
+                      )}
+                      {discount > 0 && (
+                        <Badge className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-500 text-[10px] font-bold">
+                          -{discount}%
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="mt-2.5 line-clamp-2 text-sm font-medium text-slate-800 dark:text-slate-200 min-h-10">
+                      {p.name}
+                    </p>
+                    <div className="mt-2 flex flex-col gap-0.5">
+                      <p className="text-sm font-bold text-red-600 dark:text-red-500">{formatCurrency(p.basePrice)}</p>
+                      {p.virtualPrice > p.basePrice && (
+                        <p className="text-xs text-muted-foreground line-through">{formatCurrency(p.virtualPrice)}</p>
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           </CardContent>
         </Card>
 
+        {/* Related Posts */}
         <Card className="xl:col-span-4">
           <CardHeader>
             <CardTitle>Bài viết liên quan</CardTitle>

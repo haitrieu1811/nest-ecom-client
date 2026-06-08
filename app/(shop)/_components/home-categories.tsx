@@ -9,7 +9,7 @@ import { CategoryIncludeTranslationsType } from '@/schemas/category.schema'
 
 export default function HomeCategories({ categories }: { categories: CategoryIncludeTranslationsType[] }) {
   return (
-    <div className="grid grid-cols-8 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-3">
       {categories.map((category) => (
         <Link
           key={category.id}
@@ -20,7 +20,7 @@ export default function HomeCategories({ categories }: { categories: CategoryInc
 
           <div className="relative flex min-h-36 flex-col items-center justify-center gap-3">
             <div className="rounded-2xl border bg-background/70 p-1.5 shadow-sm backdrop-blur-sm transition-transform duration-300 group-hover:scale-105 dark:bg-black/20">
-              <Avatar className="size-12 md:size-14">
+              <Avatar className="size-14 md:size-16">
                 <AvatarImage src={category.logo || undefined} alt={category.name} className="object-cover" />
                 <AvatarFallback className="font-semibold">{category.name.slice(0, 2).toUpperCase()}</AvatarFallback>
               </Avatar>

@@ -4,6 +4,7 @@ const PATH = {
   HOME: '/',
   CATEGORIES: '/categories',
   CATEGORY_DETAIL: (name: string, id: number) => `/categories/${generateNameId(name, id)}`,
+  PRODUCT_DETAIL: (name: string, id: number) => `/products/${generateNameId(name, id)}`,
 
   REGISTER: '/auth/register',
   LOGIN: '/auth/login',

@@ -44,7 +44,15 @@ export const manageProductApi = {
 }
 
 export const productApi = {
-  getList(query: GetProductsQueryType) {
+  getList(query?: GetProductsQueryType) {
+    const queryString = new URLSearchParams({
+      page: String(query?.page ?? 1),
+      limit: String(query?.limit ?? 20),
+    }).toString()
+    return http.get<GetProductsResType>(`/products?${queryString}`)
+  },
+
+  sGetList(query: GetProductsQueryType) {
     const queryString = new URLSearchParams({
       page: String(query.page),
       limit: String(query.limit),

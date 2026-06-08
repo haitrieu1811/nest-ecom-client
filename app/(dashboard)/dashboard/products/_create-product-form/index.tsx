@@ -272,25 +272,6 @@ export default function CreateProductForm({ productData, onCreateSuccess, onUpda
                           </Field>
                         )}
                       />
-                      <Controller
-                        name="description"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor={field.name}>Mô tả</FieldLabel>
-                            <RichTextEditor
-                              value={field.value || ''}
-                              onChange={(html) => field.onChange(html)}
-                              placeholder="Nhập mô tả ngắn về sản phẩm"
-                              className="min-h-30"
-                            />
-                            <FieldDescription>
-                              Nhập mô tả ngắn về sản phẩm để người dùng có thể hiểu rõ hơn về sản phẩm.
-                            </FieldDescription>
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
                       <div className="grid gap-4 sm:grid-cols-2">
                         <Controller
                           name="basePrice"
@@ -333,6 +314,25 @@ export default function CreateProductForm({ productData, onCreateSuccess, onUpda
                           )}
                         />
                       </div>
+                      <Controller
+                        name="description"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                          <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel htmlFor={field.name}>Mô tả</FieldLabel>
+                            <RichTextEditor
+                              value={field.value || ''}
+                              onChange={(html) => field.onChange(html)}
+                              placeholder="Nhập mô tả ngắn về sản phẩm"
+                              className="min-h-30"
+                            />
+                            <FieldDescription>
+                              Nhập mô tả ngắn về sản phẩm để người dùng có thể hiểu rõ hơn về sản phẩm.
+                            </FieldDescription>
+                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                          </Field>
+                        )}
+                      />
                     </FieldGroup>
                     <PublishDate />
                   </div>
