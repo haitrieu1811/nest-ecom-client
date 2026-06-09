@@ -1,15 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client'
 
+import { ImageUpIcon, XIcon } from 'lucide-react'
+import Image from 'next/image'
 import React from 'react'
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form'
+import { toast } from 'sonner'
 
-import InputImages from '@/components/input-images'
+import { useCreateProductFormContext } from '@/app/(dashboard)/dashboard/products/_create-product-form'
 import { InputNumber } from '@/components/input-number'
 import { Button } from '@/components/ui/button'
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { CreateProductBodyType, SKUType, VariantsType } from '@/schemas/product.schema'
-import { useCreateProductFormContext } from '@/app/(dashboard)/dashboard/products/_create-product-form'
 
 const generateSKUs = (variants: VariantsType): Pick<SKUType, 'value' | 'price' | 'stock' | 'images'>[] => {
   const normalizedVariants = variants
@@ -36,9 +40,141 @@ const generateSKUs = (variants: VariantsType): Pick<SKUType, 'value' | 'price' |
   }))
 }
 
+interface VariantOptionImageUploaderProps {
+  optionValue: string
+  visibleSkus: Pick<SKUType, 'value' | 'price' | 'stock' | 'images'>[]
+  skuForm: Record<string, import('@/app/(dashboard)/dashboard/products/_create-product-form').SkuFormValue>
+  skusFromForm: Pick<SKUType, 'value' | 'price' | 'stock' | 'images'>[] | undefined
+  setSkuForm: React.Dispatch<
+    React.SetStateAction<
+      Record<string, import('@/app/(dashboard)/dashboard/products/_create-product-form').SkuFormValue>
+    >
+  >
+  setValue: any
+  form: any
+}
+
+function VariantOptionImageUploader({
+  optionValue,
+  visibleSkus,
+  skuForm,
+  skusFromForm,
+  setSkuForm,
+  setValue,
+  form,
+}: VariantOptionImageUploaderProps) {
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  const matchingSkuValues = React.useMemo(() => {
+    return visibleSkus.map((s) => s.value).filter((val) => val === optionValue || val.startsWith(optionValue + '-'))
+  }, [visibleSkus, optionValue])
+
+  const repSkuValue = matchingSkuValues[0]
+
+  const previewUrl = React.useMemo(() => {
+    if (!repSkuValue) return null
+
+    const localFiles = skuForm[repSkuValue]?.images || []
+    if (localFiles.length > 0) {
+      return URL.createObjectURL(localFiles[0])
+    }
+
+    const serverImages = skusFromForm?.find((s) => s.value === repSkuValue)?.images || []
+    if (serverImages.length > 0) {
+      return serverImages[0]
+    }
+
+    return null
+  }, [repSkuValue, skuForm, skusFromForm])
+
+  React.useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl)
+      }
+    }
+  }, [previewUrl])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    setSkuForm((prev: any) => {
+      const updated = { ...prev }
+      matchingSkuValues.forEach((val) => {
+        updated[val] = {
+          ...(updated[val] || { price: undefined, stock: undefined, images: [] }),
+          images: files,
+        }
+      })
+      return updated
+    })
+  }
+
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+    setSkuForm((prev: any) => {
+      const updated = { ...prev }
+      matchingSkuValues.forEach((val) => {
+        updated[val] = {
+          ...(updated[val] || { price: undefined, stock: undefined, images: [] }),
+          images: [],
+        }
+      })
+      return updated
+    })
+    const currentSkus = form.getValues('skus') || []
+    const updatedSkus = currentSkus.map((s: any) => {
+      if (matchingSkuValues.includes(s.value)) {
+        return {
+          ...s,
+          images: [],
+        }
+      }
+      return s
+    })
+    setValue('skus', updatedSkus, { shouldValidate: true })
+  }
+
+  return (
+    <div className="relative size-10 shrink-0 mt-1 mx-auto">
+      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+      {previewUrl ? (
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="group relative size-full cursor-pointer overflow-hidden rounded-md border border-border shadow-xs hover:border-primary/50"
+        >
+          <Image src={previewUrl} alt={optionValue} fill className="object-cover" unoptimized />
+          <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={handleRemove}
+              className="rounded-full bg-destructive p-0.5 text-white hover:bg-destructive/80 transition-colors shadow-xs"
+            >
+              <XIcon className="size-2.5" />
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="flex size-full flex-col items-center justify-center rounded-md border border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-primary/5 transition-all text-muted-foreground hover:text-primary"
+        >
+          <ImageUpIcon className="size-3.5 text-primary" />
+        </button>
+      )}
+    </div>
+  )
+}
+
 export default function VariantsSkus() {
   const { skuForm, setSkuForm } = useCreateProductFormContext()
-  const [expandedSkuImages, setExpandedSkuImages] = React.useState<Record<string, boolean>>({})
+  const [bulkPrice, setBulkPrice] = React.useState<number | undefined>(undefined)
+  const [bulkStock, setBulkStock] = React.useState<number | undefined>(undefined)
 
   const form = useFormContext<CreateProductBodyType>()
   const { control, register, setValue, formState } = form
@@ -52,6 +188,15 @@ export default function VariantsSkus() {
   const skusFromForm = useWatch({ control, name: 'skus' })
 
   const visibleSkus = React.useMemo(() => generateSKUs((variants ?? []) as VariantsType), [variants])
+
+  const normalizedVariants = React.useMemo(() => {
+    return (variants ?? [])
+      .map((variant) => ({
+        value: variant.value.trim(),
+        options: variant.options.map((option) => option.trim()).filter(Boolean),
+      }))
+      .filter((variant) => variant.value && variant.options.length > 0)
+  }, [variants])
 
   const syncedSkus = React.useMemo<Pick<SKUType, 'value' | 'price' | 'stock' | 'images'>[]>(
     () =>
@@ -72,6 +217,26 @@ export default function VariantsSkus() {
   React.useEffect(() => {
     setValue('skus', syncedSkus)
   }, [setValue, syncedSkus])
+
+  const handleApplyBulk = () => {
+    if (bulkPrice === undefined && bulkStock === undefined) {
+      toast.warning('Vui lòng nhập giá hoặc số lượng để áp dụng')
+      return
+    }
+
+    setSkuForm((prev) => {
+      const updated = { ...prev }
+      visibleSkus.forEach((sku) => {
+        updated[sku.value] = {
+          ...(updated[sku.value] || { price: undefined, stock: undefined, images: [] }),
+          ...(bulkPrice !== undefined ? { price: bulkPrice } : {}),
+          ...(bulkStock !== undefined ? { stock: bulkStock } : {}),
+        }
+      })
+      return updated
+    })
+    toast.success('Đã áp dụng giá trị cho tất cả SKU thành công')
+  }
 
   const handleAddOption = (variantIndex: number) => {
     const currentOptions = variants?.[variantIndex]?.options ?? []
@@ -107,51 +272,6 @@ export default function VariantsSkus() {
     }))
   }
 
-  const updateSkuImages = (sku: string, images: File[]) => {
-    setSkuForm((prev) => ({
-      ...prev,
-      [sku]: {
-        ...(prev[sku] || { price: undefined, stock: undefined, images: [] }),
-        images,
-      },
-    }))
-  }
-
-  const handleRemoveSkuServerImage = (skuValue: string, urlToRemove: string) => {
-    const currentSkus = form.getValues('skus') || []
-    const updatedSkus = currentSkus.map((s) => {
-      if (s.value === skuValue) {
-        return {
-          ...s,
-          images: s.images.filter((url) => url !== urlToRemove),
-        }
-      }
-      return s
-    })
-    setValue('skus', updatedSkus, { shouldValidate: true })
-  }
-
-  const handleClearAllSkuServerImages = (skuValue: string) => {
-    const currentSkus = form.getValues('skus') || []
-    const updatedSkus = currentSkus.map((s) => {
-      if (s.value === skuValue) {
-        return {
-          ...s,
-          images: [],
-        }
-      }
-      return s
-    })
-    setValue('skus', updatedSkus, { shouldValidate: true })
-  }
-
-  const toggleSkuImages = (sku: string) => {
-    setExpandedSkuImages((prev) => ({
-      ...prev,
-      [sku]: !prev[sku],
-    }))
-  }
-
   return (
     <div className="space-y-6 rounded-2xl border bg-linear-to-b from-background to-muted/20 p-5 shadow-sm">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
@@ -165,7 +285,7 @@ export default function VariantsSkus() {
           {visibleSkus.length > 0 ? `${visibleSkus.length} SKU đang được sinh` : 'Chưa có SKU nào'}
         </div>
       </div>
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="space-y-6">
         <Field>
           <FieldLabel>Phân loại hàng</FieldLabel>
           <FieldDescription>Nhập tên phân loại hàng và các tùy chọn. Thêm tùy chọn bằng nút bên dưới.</FieldDescription>
@@ -175,7 +295,7 @@ export default function VariantsSkus() {
                 Thêm phân loại hàng
               </Button>
             </div>
-            <div className="space-y-3">
+            <div className="grid gap-4 md:grid-cols-2">
               {variantsFieldArray.fields.length === 0 && (
                 <div className="rounded-lg border border-dashed bg-background p-4 text-sm text-muted-foreground">
                   Chưa có phân loại hàng nào. Nhấn &quot;Thêm phân loại hàng&quot; để bắt đầu.
@@ -265,75 +385,135 @@ export default function VariantsSkus() {
           <div className="rounded-xl border bg-background p-4 shadow-xs">
             {visibleSkus.length > 0 ? (
               <div className="space-y-3">
-                <div className="grid gap-3 rounded-lg bg-muted/30 p-3 text-xs text-muted-foreground sm:grid-cols-[2fr_1fr_1fr_auto]">
-                  <div className="font-medium">SKU</div>
-                  <div className="font-medium">Giá</div>
-                  <div className="font-medium">Stock</div>
-                  <div className="text-right font-medium">Ảnh</div>
+                {/* Panel điền nhanh tất cả SKU */}
+                <div className="mb-4 rounded-xl border border-primary/20 bg-primary/5 p-3.5 space-y-2">
+                  <p className="text-xs font-bold text-primary">Điền nhanh cho tất cả SKU</p>
+                  <div className="flex flex-wrap items-end gap-3">
+                    <div className="flex-1 min-w-[120px]">
+                      <label className="text-[11px] font-medium text-muted-foreground block mb-1">
+                        Giá áp dụng chung
+                      </label>
+                      <InputNumber placeholder="Nhập giá..." value={bulkPrice} onChange={setBulkPrice} />
+                    </div>
+                    <div className="flex-1 min-w-[100px]">
+                      <label className="text-[11px] font-medium text-muted-foreground block mb-1">
+                        Stock áp dụng chung
+                      </label>
+                      <InputNumber placeholder="Nhập số lượng..." value={bulkStock} onChange={setBulkStock} />
+                    </div>
+                    <Button type="button" size="sm" onClick={handleApplyBulk} className="shrink-0">
+                      Áp dụng chung
+                    </Button>
+                  </div>
                 </div>
 
-                {visibleSkus.map((sku) => {
-                  const imageCount = skuForm[sku.value]?.images?.length ?? 0
-                  const isExpanded = !!expandedSkuImages[sku.value]
-
-                  return (
-                    <div key={sku.value} className="rounded-lg bg-muted/20">
-                      <div className="grid gap-3 p-3 sm:grid-cols-[2fr_1fr_1fr_auto] sm:items-center">
-                        <div className="min-w-0">
-                          <p className="font-medium text-sm truncate">{sku.value}</p>
-                          <p className="text-xs text-muted-foreground">SKU tự sinh từ variant</p>
-                        </div>
-                        <Field className="min-w-0">
-                          <FieldLabel htmlFor={`sku-price-${sku.value}`} className="text-xs">
-                            Giá
-                          </FieldLabel>
-                          <InputNumber
-                            id={`sku-price-${sku.value}`}
-                            placeholder="28.990.000"
-                            value={skuForm[sku.value]?.price}
-                            onChange={(value) => updateSkuField(sku.value, 'price', value)}
-                          />
-                        </Field>
-                        <Field className="min-w-0">
-                          <FieldLabel htmlFor={`sku-stock-${sku.value}`} className="text-xs">
-                            Stock
-                          </FieldLabel>
-                          <InputNumber
-                            id={`sku-stock-${sku.value}`}
-                            placeholder="120"
-                            value={skuForm[sku.value]?.stock}
-                            onChange={(value) => updateSkuField(sku.value, 'stock', value)}
-                          />
-                        </Field>
-                        <div className="flex flex-col items-end gap-2">
-                          <span className="text-xs text-muted-foreground">{imageCount} ảnh</span>
-                          <Button type="button" variant="outline" size="sm" onClick={() => toggleSkuImages(sku.value)}>
-                            {isExpanded ? 'Ẩn ảnh' : 'Chỉnh ảnh'}
-                          </Button>
-                        </div>
-                      </div>
-
-                      {isExpanded ? (
-                        <div className="border-t border-slate-200 bg-background p-3">
-                          <Field>
-                            <InputImages
-                              files={skuForm[sku.value]?.images || []}
-                              defaultImages={
-                                skusFromForm?.find((s) => s.value === sku.value)?.images || []
+                <div className="overflow-x-auto rounded-xl border border-border bg-card">
+                  <table className="w-full border-collapse text-left text-sm text-foreground table-fixed">
+                    <thead>
+                      <tr className="border-b bg-muted/40 font-medium text-muted-foreground text-xs">
+                        {normalizedVariants.map((v, idx) => (
+                          <th
+                            key={v.value}
+                            className={`p-3 border-r border-border font-semibold text-slate-700 dark:text-slate-300 ${idx === 0 ? 'w-[90px] text-center' : 'w-[150px]'}`}
+                          >
+                            {v.value}
+                          </th>
+                        ))}
+                        <th className="p-3 border-r border-border font-semibold text-slate-700 dark:text-slate-300 w-[220px]">
+                          <span className="text-destructive mr-0.5">*</span>Giá
+                        </th>
+                        <th className="p-3 border-r border-border font-semibold text-slate-700 dark:text-slate-300 w-[180px]">
+                          <span className="text-destructive mr-0.5">*</span>Kho hàng
+                        </th>
+                        <th className="p-3 font-semibold text-slate-700 dark:text-slate-300 w-[260px]">
+                          SKU phân loại
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {visibleSkus.map((sku, r) => {
+                        return (
+                          <tr key={sku.value} className="hover:bg-muted/10 transition-colors">
+                            {normalizedVariants.map((variant, colIndex) => {
+                              // Calculate rowspan
+                              let rowspan = 1
+                              for (let j = colIndex + 1; j < normalizedVariants.length; j++) {
+                                rowspan *= normalizedVariants[j].options.length
                               }
-                              onChange={(files) => updateSkuImages(sku.value, files)}
-                              onCancel={() => updateSkuImages(sku.value, [])}
-                              onRemoveDefault={(url) => handleRemoveSkuServerImage(sku.value, url)}
-                              onRemoveAllDefault={() => handleClearAllSkuServerImages(sku.value)}
-                              title="Hình ảnh SKU"
-                              description="Các hình ảnh riêng biệt mô tả chi tiết của SKU này."
-                            />
-                          </Field>
-                        </div>
-                      ) : null}
-                    </div>
-                  )
-                })}
+
+                              // Determine if this cell should be rendered
+                              if (r % rowspan !== 0) return null
+
+                              // Find option value
+                              const optionIndex = Math.floor(r / rowspan) % variant.options.length
+                              const optionValue = variant.options[optionIndex]
+
+                              return (
+                                <td
+                                  key={variant.value}
+                                  rowSpan={rowspan}
+                                  className="p-3 border-r border-border align-middle text-center"
+                                >
+                                  <div className="flex flex-col items-center justify-center gap-1">
+                                    <span className="font-medium text-xs text-slate-800 dark:text-slate-200">
+                                      {optionValue}
+                                    </span>
+                                    {/* Render image uploader ONLY on the first variant column */}
+                                    {colIndex === 0 && (
+                                      <VariantOptionImageUploader
+                                        optionValue={optionValue}
+                                        visibleSkus={visibleSkus}
+                                        skuForm={skuForm}
+                                        skusFromForm={skusFromForm}
+                                        setSkuForm={setSkuForm}
+                                        setValue={setValue}
+                                        form={form}
+                                      />
+                                    )}
+                                  </div>
+                                </td>
+                              )
+                            })}
+
+                            {/* Giá Input */}
+                            <td className="p-3 border-r border-border align-middle">
+                              <div className="relative flex items-center">
+                                <span className="absolute left-2.5 text-xs text-muted-foreground font-semibold">đ</span>
+                                <InputNumber
+                                  id={`sku-price-${sku.value}`}
+                                  placeholder="Nhập giá"
+                                  className="pl-6 h-9 text-xs"
+                                  value={skuForm[sku.value]?.price}
+                                  onChange={(value) => updateSkuField(sku.value, 'price', value)}
+                                />
+                              </div>
+                            </td>
+
+                            {/* Stock Input */}
+                            <td className="p-3 border-r border-border align-middle">
+                              <InputNumber
+                                id={`sku-stock-${sku.value}`}
+                                placeholder="Nhập số lượng"
+                                className="h-9 text-xs"
+                                value={skuForm[sku.value]?.stock}
+                                onChange={(value) => updateSkuField(sku.value, 'stock', value)}
+                              />
+                            </td>
+
+                            {/* SKU Input */}
+                            <td className="p-3 align-middle">
+                              <Input
+                                disabled
+                                value={sku.value}
+                                className="h-9 text-xs bg-muted/30 text-muted-foreground border-dashed"
+                              />
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ) : (
               <div className="rounded-lg border border-dashed bg-background p-4 text-sm text-muted-foreground">

@@ -1,23 +1,15 @@
 'use client'
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  LayersIcon,
-  ShieldCheckIcon,
-  StarIcon,
-  StoreIcon,
-  TruckIcon,
-} from 'lucide-react'
+import { LayersIcon, SearchIcon, ShieldCheckIcon, StarIcon, StoreIcon, TruckIcon } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 
 import QuantityController from '@/app/(shop)/_components/quantity-controller'
+import ImageZoomDialog from './image-zoom-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { cn, formatCurrency } from '@/lib/utils'
 import { ProductDetailType, SKUType } from '@/schemas/product.schema'
@@ -37,12 +29,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
     return product.skus.length > 0 ? product.skus[0] : null
   })
 
-  // Danh sách ảnh hiển thị (Ưu tiên ảnh của SKU được chọn, nếu không có ảnh SKU thì dùng ảnh sản phẩm)
+  // Danh sách ảnh hiển thị (Gộp ảnh của SKU được chọn vào đầu danh sách, sau đó là ảnh mặc định, loại bỏ trùng lặp)
   const displayImages = React.useMemo(() => {
-    if (selectedSku && selectedSku.images && selectedSku.images.length > 0) {
-      return selectedSku.images
-    }
-    return defaultImages
+    const skuImages = selectedSku && selectedSku.images ? selectedSku.images : []
+    return Array.from(new Set([...skuImages, ...defaultImages]))
   }, [selectedSku, defaultImages])
 
   // Ảnh đang được chọn hiển thị lớn
@@ -99,20 +89,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                   />
                   <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <span className="bg-black/60 px-3 py-1.5 rounded-full text-xs font-semibold text-white flex items-center gap-1.5 backdrop-blur-xs shadow-xs">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                      </svg>
+                      <SearchIcon size={16} />
                       Click để phóng to
                     </span>
                   </div>
@@ -301,80 +278,13 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       </Card>
 
       {/* Dialog phóng to hình ảnh */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-[95vw] w-[95vw] sm:max-w-[90vw] md:max-w-[85vw] lg:max-w-7xl h-[90vh] border-none bg-popover p-6 text-popover flex flex-col sm:rounded-2xl outline-hidden">
-          <DialogTitle className="sr-only">Xem ảnh sản phẩm</DialogTitle>
-          <DialogDescription className="sr-only">Xem ảnh sản phẩms</DialogDescription>
-          {/* Ảnh lớn phóng to */}
-          <div className="relative w-full flex-1 min-h-0 flex items-center justify-center">
-            {displayImages[dialogImageIndex] ? (
-              <Image
-                src={displayImages[dialogImageIndex]}
-                alt={`${product.name} - ${dialogImageIndex + 1}`}
-                fill
-                className="object-contain select-none rounded-lg"
-                unoptimized
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                Không có ảnh
-              </div>
-            )}
-
-            {/* Nút Previous / Next */}
-            {displayImages.length > 1 && (
-              <>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  type="button"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full bg-white/10 hover:bg-white/20 text-white hover:text-white outline-hidden cursor-pointer size-12"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setDialogImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length)
-                  }}
-                >
-                  <ChevronLeftIcon className="size-8" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  type="button"
-                  className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full bg-white/10 hover:bg-white/20 text-white hover:text-white outline-hidden cursor-pointer size-12"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setDialogImageIndex((prev) => (prev + 1) % displayImages.length)
-                  }}
-                >
-                  <ChevronRightIcon className="size-8" />
-                </Button>
-              </>
-            )}
-          </div>
-
-          {/* Danh sách ảnh thu nhỏ chuyển nhanh trong Dialog */}
-          {displayImages.length > 0 && (
-            <div className="mt-4 flex flex-wrap justify-center gap-2 max-w-full overflow-x-auto py-1 shrink-0">
-              {displayImages.map((img, idx) => {
-                const isActive = dialogImageIndex === idx
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setDialogImageIndex(idx)}
-                    className={cn(
-                      'relative size-14 overflow-hidden rounded-md border-2 bg-muted/10 transition-all outline-hidden cursor-pointer',
-                      isActive ? 'border-primary scale-105' : 'border-transparent opacity-60 hover:opacity-100',
-                    )}
-                  >
-                    <Image src={img} alt={`dialog-thumbnail-${idx + 1}`} fill className="object-cover" unoptimized />
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ImageZoomDialog
+        images={displayImages}
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        initialIndex={dialogImageIndex}
+        alt={product.name}
+      />
     </div>
   )
 }

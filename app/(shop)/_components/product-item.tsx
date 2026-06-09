@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { StarIcon } from 'lucide-react'
 
 import PATH from '@/constants/path'
 import { formatCurrency } from '@/lib/utils'
@@ -24,6 +25,9 @@ export default function ProductItem({ product }: ProductItemProps) {
   // Số lượng bán ngẫu nhiên/cố định dựa trên ID sản phẩm để hiển thị chân thực
   const sold = 50 + ((product.id * 17) % 950)
   const formattedSold = sold >= 1000 ? `${(sold / 1000).toFixed(1)}k+ đã bán` : `${sold} đã bán`
+
+  // Số sao ngẫu nhiên từ 4.5 đến 5.0 dựa trên ID sản phẩm để hiển thị chân thực
+  const rating = (4.5 + ((product.id * 7) % 6) * 0.1).toFixed(1)
 
   const productUrl = PATH.PRODUCT_DETAIL(product.name, product.id)
 
@@ -80,7 +84,7 @@ export default function ProductItem({ product }: ProductItemProps) {
           <div className="p-2.5 space-y-2">
             {/* Title with Inline Favorite Badge */}
             <h3 className="line-clamp-2 text-sm leading-tight text-slate-800 dark:text-slate-200 min-h-9 font-medium">
-              <span className="bg-orange-500 text-white font-bold text-[9px] px-1 py-0.5 rounded-[2px] mr-1 select-none inline-block align-middle leading-none">
+              <span className="bg-primary text-primary-foreground font-bold text-[9px] px-1 py-0.5 rounded-[2px] mr-1 select-none inline-block align-middle leading-none">
                 Yêu thích
               </span>
               <span className="align-middle">{product.name}</span>
@@ -102,7 +106,7 @@ export default function ProductItem({ product }: ProductItemProps) {
         <div className="p-2.5 pt-0 flex items-end justify-between mt-1">
           {/* Price Container */}
           <div className="flex flex-col gap-1">
-            <span className="text-base font-semibold text-orange-500 leading-none">
+            <span className="text-base font-semibold text-red-600 dark:text-red-500 leading-none">
               {formatCurrency(product.basePrice)}
             </span>
             {hasDiscount && (
@@ -112,8 +116,15 @@ export default function ProductItem({ product }: ProductItemProps) {
             )}
           </div>
 
-          {/* Sold counter */}
-          <span className="text-[11px] text-muted-foreground">{formattedSold}</span>
+          {/* Rating & Sold counter */}
+          <div className="flex flex-wrap items-center justify-end gap-x-1 gap-y-0.5 text-[11px] text-muted-foreground min-w-0">
+            <div className="flex items-center gap-0.5 shrink-0">
+              <StarIcon className="size-3 fill-amber-400 text-amber-500" />
+              <span className="font-medium text-slate-700 dark:text-slate-300">{rating}</span>
+            </div>
+            <span className="text-slate-300 dark:text-slate-700 select-none">|</span>
+            <span className="truncate">{formattedSold}</span>
+          </div>
         </div>
       </Link>
     </div>

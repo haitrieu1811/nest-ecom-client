@@ -2,8 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React from 'react'
+
+import PATH from '@/constants/path'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -239,6 +242,17 @@ export default function CreateProductForm({ productData, onCreateSuccess, onUpda
               <CardTitle className="text-xl">{productData ? productData.name : 'Thêm sản phẩm mới'}</CardTitle>
               <CardDescription>{productData ? productData.category?.name : 'Danh mục sản phẩm'}</CardDescription>
               <CardAction className="space-x-2">
+                {productData && (
+                  <Button asChild variant="outline" size="sm">
+                    <Link
+                      href={PATH.PRODUCT_DETAIL(productData.name, productData.id)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Xem ở cửa hàng
+                    </Link>
+                  </Button>
+                )}
                 <Button disabled={isPending} type="submit" size="sm">
                   {isPending && <Spinner />}
                   {productData ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'}
@@ -253,7 +267,7 @@ export default function CreateProductForm({ productData, onCreateSuccess, onUpda
                   <TabsTrigger value="brand-category">Thương hiệu và danh mục</TabsTrigger>
                   <TabsTrigger value="variants-skus">Phân loại hàng</TabsTrigger>
                 </TabsList>
-                <TabsContent value="basic-info" className="mt-4">
+                <TabsContent value="basic-info" className="mt-4 data-[state=inactive]:hidden" forceMount>
                   <div className="grid gap-6 xl:grid-cols-2">
                     <FieldGroup>
                       <Controller
@@ -337,7 +351,7 @@ export default function CreateProductForm({ productData, onCreateSuccess, onUpda
                     <PublishDate />
                   </div>
                 </TabsContent>
-                <TabsContent value="images" className="mt-4">
+                <TabsContent value="images" className="mt-4 data-[state=inactive]:hidden" forceMount>
                   <FieldGroup>
                     <ProductMediaUploader
                       thumbnailFile={thumbnailFile}
@@ -347,7 +361,7 @@ export default function CreateProductForm({ productData, onCreateSuccess, onUpda
                     />
                   </FieldGroup>
                 </TabsContent>
-                <TabsContent value="brand-category" className="mt-4">
+                <TabsContent value="brand-category" className="mt-4 data-[state=inactive]:hidden" forceMount>
                   <Controller
                     control={form.control}
                     name="brandId"
@@ -397,7 +411,7 @@ export default function CreateProductForm({ productData, onCreateSuccess, onUpda
                   />
                   <ProductCategorySelector />
                 </TabsContent>
-                <TabsContent value="variants-skus" className="mt-4">
+                <TabsContent value="variants-skus" className="mt-4 data-[state=inactive]:hidden" forceMount>
                   <VariantsSkus />
                 </TabsContent>
               </Tabs>

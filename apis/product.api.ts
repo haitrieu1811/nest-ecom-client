@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import isNil from 'lodash/isNil'
+import omitBy from 'lodash/omitBy'
+
 import http from '@/lib/http'
 import {
   CreateProductBodyType,
@@ -45,18 +48,21 @@ export const manageProductApi = {
 
 export const productApi = {
   getList(query?: GetProductsQueryType) {
-    const queryString = new URLSearchParams({
-      page: String(query?.page ?? 1),
-      limit: String(query?.limit ?? 20),
-    }).toString()
+    const cleanQuery = omitBy(
+      {
+        page: query?.page ?? 1,
+        limit: query?.limit ?? 20,
+        ...query,
+      },
+      isNil,
+    )
+    const queryString = new URLSearchParams(cleanQuery as any).toString()
     return http.get<GetProductsResType>(`/products?${queryString}`)
   },
 
   sGetList(query: GetProductsQueryType) {
-    const queryString = new URLSearchParams({
-      page: String(query.page),
-      limit: String(query.limit),
-    }).toString()
+    const cleanQuery = omitBy(query, isNil)
+    const queryString = new URLSearchParams(cleanQuery as any).toString()
     return http.get<GetProductsResType>(`/products?${queryString}`)
   },
 

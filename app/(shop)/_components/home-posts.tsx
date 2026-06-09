@@ -1,7 +1,7 @@
-import { CalendarDaysIcon, Clock3Icon, ImageIcon } from 'lucide-react'
+import { CalendarDaysIcon, Clock3Icon } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import PATH from '@/constants/path'
@@ -14,6 +14,7 @@ const POST_ITEMS = [
     category: 'Mẹo mua sắm',
     date: '31/05/2026',
     readTime: '6 phút đọc',
+    thumbnail: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=60',
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ const POST_ITEMS = [
     category: 'Lifestyle',
     date: '29/05/2026',
     readTime: '4 phút đọc',
+    thumbnail: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=500&auto=format&fit=crop&q=60',
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ const POST_ITEMS = [
     category: 'Review',
     date: '27/05/2026',
     readTime: '5 phút đọc',
+    thumbnail: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&auto=format&fit=crop&q=60',
   },
   {
     id: 4,
@@ -38,6 +41,7 @@ const POST_ITEMS = [
     category: 'Kinh nghiệm',
     date: '24/05/2026',
     readTime: '3 phút đọc',
+    thumbnail: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&auto=format&fit=crop&q=60',
   },
   {
     id: 5,
@@ -46,91 +50,67 @@ const POST_ITEMS = [
     category: 'Mẹo mua sắm',
     date: '22/05/2026',
     readTime: '4 phút đọc',
+    thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&auto=format&fit=crop&q=60',
+  },
+  {
+    id: 6,
+    title: 'Top thiết bị thông minh đáng mua cho phòng khách',
+    excerpt: 'Các giải pháp công nghệ đơn giản giúp phòng khách gia đình tiện nghi và thông minh hơn.',
+    category: 'Lifestyle',
+    date: '20/05/2026',
+    readTime: '5 phút đọc',
+    thumbnail: 'https://images.unsplash.com/photo-1558882224-cca166733360?w=500&auto=format&fit=crop&q=60',
   },
 ] as const
 
 export default function HomePosts() {
-  const [featuredPost, ...otherPosts] = POST_ITEMS
-
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Bài viết nổi bật</CardTitle>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl font-semibold">Bài viết nổi bật</CardTitle>
         <CardDescription>Cập nhật mẹo mua sắm, đánh giá sản phẩm và xu hướng mới mỗi tuần.</CardDescription>
         <CardAction>
-          <Button asChild variant="ghost" size="sm">
+          <Button asChild variant="link" size="sm">
             <Link href={PATH.HOME}>Xem tất cả</Link>
           </Button>
         </CardAction>
       </CardHeader>
 
-      <CardContent className="grid gap-4 lg:grid-cols-5">
-        <Link
-          href={PATH.HOME}
-          className="group relative overflow-hidden rounded-2xl border bg-card p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 lg:col-span-2"
-        >
-          <div className="pointer-events-none absolute -top-10 -right-10 size-20 rounded-full bg-muted/40 blur-xl" />
-
-          <div className="relative space-y-3">
-            <div className="flex aspect-video items-center justify-center rounded-xl border border-dashed bg-muted/60 text-xs text-muted-foreground sm:aspect-21/9 lg:aspect-4/3">
-              <span className="inline-flex items-center gap-1.5">
-                <ImageIcon className="size-3.5" />
-                Image Placeholder
-              </span>
-            </div>
-
-            <Badge variant="secondary">{featuredPost.category}</Badge>
-            <h3 className="line-clamp-2 text-xl font-semibold leading-7 md:text-2xl md:leading-8">{featuredPost.title}</h3>
-            <p className="line-clamp-3 text-base text-muted-foreground">{featuredPost.excerpt}</p>
-
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <CalendarDaysIcon className="size-4" />
-                {featuredPost.date}
-              </span>
-              <span className="inline-flex items-center gap-1">
-                <Clock3Icon className="size-4" />
-                {featuredPost.readTime}
-              </span>
-            </div>
-          </div>
-        </Link>
-
-        <div className="grid gap-3 sm:grid-cols-2 lg:col-span-3">
-          {otherPosts.map((post) => (
-            <Link
-              key={post.id}
-              href={PATH.HOME}
-              className="group rounded-xl border bg-card p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-md hover:shadow-primary/10"
-            >
-              <div className="space-y-2">
-                <div className="flex aspect-video items-center justify-center rounded-lg border border-dashed bg-muted/60 text-[11px] text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <ImageIcon className="size-3" />
-                    Placeholder
-                  </span>
-                </div>
-
-                <Badge variant="outline" className="font-normal">
-                  {post.category}
-                </Badge>
-                <h4 className="line-clamp-2 text-base font-semibold leading-6">{post.title}</h4>
-                <p className="line-clamp-2 text-sm text-muted-foreground">{post.excerpt}</p>
-
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1">
-                    <CalendarDaysIcon className="size-3.5" />
-                    {post.date}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Clock3Icon className="size-3.5" />
-                    {post.readTime}
-                  </span>
-                </div>
+      <CardContent className="grid gap-3 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 pb-4">
+        {POST_ITEMS.map((post) => (
+          <Link
+            key={post.id}
+            href={PATH.HOME}
+            className="group rounded-xl border border-border/50 bg-card p-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-xs flex flex-col justify-between"
+          >
+            <div className="space-y-2.5">
+              {/* Post Thumbnail */}
+              <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted/20 border border-border/30 shrink-0">
+                <Image
+                  src={post.thumbnail}
+                  alt={post.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  unoptimized
+                />
               </div>
-            </Link>
-          ))}
-        </div>
+
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="font-bold text-primary uppercase tracking-wide">{post.category}</span>
+                <span className="text-muted-foreground flex items-center gap-0.5">
+                  <Clock3Icon className="size-2.5" />
+                  {post.readTime}
+                </span>
+              </div>
+              <h4 className="line-clamp-2 text-sm font-semibold leading-snug">{post.title}</h4>
+              <p className="line-clamp-2 text-xs text-muted-foreground leading-normal">{post.excerpt}</p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-border/40 text-xs text-muted-foreground flex items-center gap-1.5">
+              <CalendarDaysIcon className="size-3.5" />
+              <span>{post.date}</span>
+            </div>
+          </Link>
+        ))}
       </CardContent>
     </Card>
   )

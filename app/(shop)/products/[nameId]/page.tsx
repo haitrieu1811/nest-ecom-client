@@ -2,7 +2,6 @@ import {
   ChevronRightIcon,
   Clock3Icon,
   MessageCircleIcon,
-  MessageSquareTextIcon,
   ShieldCheckIcon,
   StarIcon,
   StoreIcon,
@@ -16,6 +15,7 @@ import { notFound } from 'next/navigation'
 import { productApi } from '@/apis/product.api'
 import ProductDescription from '@/app/(shop)/products/[nameId]/product-description'
 import ProductDetail from '@/app/(shop)/products/[nameId]/product-detail'
+import ProductReviews from '@/app/(shop)/products/[nameId]/product-reviews'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -45,33 +45,6 @@ const RELATED_POSTS = [
     excerpt: 'Phân biệt nhanh hai công nghệ chống ồn phổ biến trên các mẫu tai nghe hiện đại.',
     date: '24/05/2026',
     readTime: '7 phút đọc',
-  },
-] as const
-
-const REVIEWS = [
-  {
-    id: 1,
-    name: 'Nguyen Minh Anh',
-    rating: 5,
-    comment: 'Âm thanh chi tiết, đeo êm. Dùng học online và nghe nhạc đều ổn, pin khá trâu.',
-    date: '27/05/2026',
-    tag: 'Đã mua hàng',
-  },
-  {
-    id: 2,
-    name: 'Tran Gia Bao',
-    rating: 4,
-    comment: 'Kết nối nhanh, độ trễ thấp. Hộp sạc hơi bám vân tay nhưng nhìn chung đáng tiền.',
-    date: '23/05/2026',
-    tag: 'Đã mua hàng',
-  },
-  {
-    id: 3,
-    name: 'Le Thanh Thuy',
-    rating: 5,
-    comment: 'Mic thoại rõ, giao hàng nhanh. Mình hài lòng vì mức giá sale rất tốt.',
-    date: '20/05/2026',
-    tag: 'Đã mua hàng',
   },
 ] as const
 
@@ -229,7 +202,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
       {/* Product Description & Reviews & Related items */}
       <div className="grid gap-6 items-start xl:grid-cols-12">
         {/* Description */}
-        <Card className="xl:col-span-7">
+        <Card className="xl:col-span-12">
           <CardHeader>
             <CardTitle className="text-xl">Mô tả sản phẩm</CardTitle>
             <CardDescription>
@@ -242,53 +215,9 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </Card>
 
         {/* Reviews */}
-        <Card className="xl:col-span-5">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <MessageSquareTextIcon className="size-5 text-primary" />
-              Đánh giá sản phẩm
-            </CardTitle>
-            <CardDescription>Phản hồi từ khách hàng đã mua và sử dụng sản phẩm.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-lg border bg-muted/25 p-4">
-              <div className="flex flex-wrap items-end gap-3">
-                <p className="text-3xl font-bold text-foreground">4.8</p>
-                <p className="pb-1 text-sm text-muted-foreground">trên 5 • 128 đánh giá</p>
-              </div>
-              <div className="mt-2 flex items-center gap-1 text-amber-500">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <StarIcon key={index} className="size-4 fill-current" />
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {REVIEWS.map((review) => (
-                <div key={review.id} className="rounded-lg border p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <Avatar>
-                        <AvatarFallback>{review.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-semibold">{review.name}</p>
-                        <div className="flex items-center gap-1 text-amber-500">
-                          {Array.from({ length: review.rating }).map((_, index) => (
-                            <StarIcon key={index} className="size-3.5 fill-current" />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <Badge variant="outline">{review.tag}</Badge>
-                  </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{review.comment}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{review.date}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="xl:col-span-12">
+          <ProductReviews />
+        </div>
 
         {/* Related Products */}
         <Card className="xl:col-span-8">
