@@ -4,9 +4,11 @@ import http from '@/lib/http'
 import {
   CreateUserBodyType,
   CreateUserResType,
-  GetUserResType,
-  GetUsersQueryType,
-  GetUsersResType,
+  GetListSellersResType,
+  GetListUsersQueryType,
+  GetListUsersResType,
+  GetSellerDetailResType,
+  GetUserDetailResType,
   UpdateUserBodyType,
   UpdateUserResType,
 } from '@/schemas/user.schema'
@@ -15,16 +17,16 @@ import { MessageResType, PaginationQueryType } from '@/schemas/utils.schema'
 const userApi = {
   sGetAll({ query, accessToken }: { query: PaginationQueryType; accessToken: string }) {
     const queryString = new URLSearchParams(query as any).toString()
-    return http.get<GetUsersResType>(`/users?${queryString}`, {
+    return http.get<GetListUsersResType>(`/users?${queryString}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
   },
 
-  getAll(query: GetUsersQueryType) {
+  getAll(query: GetListUsersQueryType) {
     const queryString = new URLSearchParams(query as any).toString()
-    return http.get<GetUsersResType>(`/users?${queryString}`)
+    return http.get<GetListUsersResType>(`/users?${queryString}`)
   },
 
   create(body: CreateUserBodyType) {
@@ -40,7 +42,16 @@ const userApi = {
   },
 
   getDetail(userId: number) {
-    return http.get<GetUserResType>(`/users/${userId}`)
+    return http.get<GetUserDetailResType>(`/users/${userId}`)
+  },
+
+  getSellers(query: GetListUsersQueryType) {
+    const queryString = new URLSearchParams(query as any).toString()
+    return http.get<GetListSellersResType>(`/users/sellers?${queryString}`)
+  },
+
+  getSellerDetail(userId: number) {
+    return http.get<GetSellerDetailResType>(`/users/sellers/${userId}`)
   },
 }
 

@@ -5,6 +5,7 @@ import { BrandIncludeTranslationsSchema } from '@/schemas/brand.schema'
 import { CategoryIncludeTranslationsSchema } from '@/schemas/category.schema'
 import { ProductTranslationSchema } from '@/schemas/product-translation.schema'
 import { PaginationQuerySchema, PaginationResSchema } from '@/schemas/utils.schema'
+import { UserSchema } from '@/schemas/user.schema'
 
 export const SKUSchema = z.object({
   id: z.int().positive(),
@@ -106,6 +107,10 @@ export const ProductDetailSchema = ProductIncludeTranslationsSchema.extend({
   category: CategoryIncludeTranslationsSchema.nullable(),
   brand: BrandIncludeTranslationsSchema.nullable(),
   skus: z.array(SKUSchema),
+  createdBy: UserSchema.omit({
+    password: true,
+    totpSecret: true,
+  }),
 })
 
 export const CreateProductBodySchema = ProductSchema.pick({

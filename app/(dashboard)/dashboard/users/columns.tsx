@@ -3,7 +3,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { vi } from 'date-fns/locale'
 import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
@@ -24,9 +24,9 @@ import {
 import { ROLE_NAME, USER_STATUS } from '@/constants/auth.constant'
 import PATH from '@/constants/path'
 import { cn } from '@/lib/utils'
-import { GetUsersResType } from '@/schemas/user.schema'
+import { GetListUsersResType } from '@/schemas/user.schema'
 
-type User = GetUsersResType['data'][number]
+type User = GetListUsersResType['data'][number]
 
 export const userColumns: ColumnDef<User>[] = [
   {

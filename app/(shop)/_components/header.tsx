@@ -30,7 +30,7 @@ export default function Header() {
               + Freeship toàn quốc!
             </span>
             <Link
-              href="#"
+              href={PATH.LANDING_FLASH_SALE}
               className="font-bold underline text-primary hover:text-primary/85 transition-colors ml-1.5 shrink-0 flex items-center gap-0.5"
             >
               Săn Deal Ngay

@@ -1,6 +1,8 @@
 import {
+  BookOpenIcon,
   ChevronRightIcon,
   Clock3Icon,
+  LayersIcon,
   MessageCircleIcon,
   ShieldCheckIcon,
   StarIcon,
@@ -8,20 +10,20 @@ import {
   UsersIcon,
 } from 'lucide-react'
 import { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { productApi } from '@/apis/product.api'
+import ProductItem from '@/app/(shop)/_components/product-item'
 import ProductDescription from '@/app/(shop)/products/[nameId]/product-description'
 import ProductDetail from '@/app/(shop)/products/[nameId]/product-detail'
 import ProductReviews from '@/app/(shop)/products/[nameId]/product-reviews'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import PATH from '@/constants/path'
-import { extractIdFromNameId, formatCurrency } from '@/lib/utils'
+import { extractIdFromNameId } from '@/lib/utils'
 import { ProductDetailType } from '@/schemas/product.schema'
 
 const RELATED_POSTS = [
@@ -160,7 +162,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         <CardContent className="grid gap-4 py-5 md:grid-cols-[1fr_auto] md:items-center">
           <div className="flex flex-wrap items-start gap-3">
             <Avatar className="size-14 ring-2 ring-primary/20">
-              <AvatarFallback className="bg-primary/10 text-primary">NS</AvatarFallback>
+              <AvatarImage src={product.createdBy.avatar ?? undefined} alt={product.createdBy.name ?? ''} />
+              <AvatarFallback className="bg-primary/10 text-primary">
+                {product.createdBy.name?.slice(0, 2).toUpperCase() ?? 'UN'}
+              </AvatarFallback>
             </Avatar>
 
             <div className="space-y-2">
@@ -169,7 +174,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                   <StoreIcon className="size-4 text-primary" />
                   Shop bán sản phẩm
                 </p>
-                <p className="text-lg font-semibold text-foreground">Nest Official Store</p>
+                <p className="text-lg font-semibold text-foreground">{product.createdBy.name ?? ''}</p>
               </div>
 
               <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -194,7 +199,12 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               <MessageCircleIcon className="size-4" />
               Chat với shop
             </Button>
-            <Button className="min-w-32">Xem shop</Button>
+            <Button asChild className="min-w-32">
+              <Link href={PATH.SELLER_DETAIL(product.createdBy.name ?? '', product.createdBy.id)}>
+                <StoreIcon className="size-4" />
+                Xem shop
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -220,78 +230,62 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </div>
 
         {/* Related Products */}
-        <Card className="xl:col-span-8">
-          <CardHeader>
-            <CardTitle>Sản phẩm cùng danh mục</CardTitle>
-            <CardDescription>Gợi ý thêm các sản phẩm liên quan bạn có thể quan tâm.</CardDescription>
+        <Card className="xl:col-span-8 overflow-visible">
+          <CardHeader className="flex flex-row items-center justify-between gap-4 pb-5">
+            <div className="space-y-1">
+              <CardTitle className="text-lg sm:text-xl font-medium flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                <LayersIcon className="size-5 text-primary shrink-0" />
+                Sản phẩm cùng danh mục
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm font-normal text-slate-500 dark:text-slate-400">
+                Gợi ý thêm các sản phẩm liên quan bạn có thể quan tâm.
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {relatedProducts.map((p) => {
-                const discount =
-                  p.virtualPrice > p.basePrice ? Math.round(((p.virtualPrice - p.basePrice) / p.virtualPrice) * 100) : 0
-                return (
-                  <Link
-                    key={p.id}
-                    href={PATH.PRODUCT_DETAIL(p.name, p.id)}
-                    className="group relative flex flex-col overflow-hidden rounded-2xl border bg-background p-3 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-md"
-                  >
-                    <div className="relative aspect-square overflow-hidden rounded-xl border bg-muted/10">
-                      {p.thumbnail ? (
-                        <Image
-                          src={p.thumbnail}
-                          alt={p.name}
-                          fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
-                          unoptimized
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-                          Không có ảnh
-                        </div>
-                      )}
-                      {discount > 0 && (
-                        <Badge className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-500 text-[10px] font-bold">
-                          -{discount}%
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="mt-2.5 line-clamp-2 text-sm font-medium text-slate-800 dark:text-slate-200 min-h-10">
-                      {p.name}
-                    </p>
-                    <div className="mt-2 flex flex-col gap-0.5">
-                      <p className="text-sm font-bold text-red-600 dark:text-red-500">{formatCurrency(p.basePrice)}</p>
-                      {p.virtualPrice > p.basePrice && (
-                        <p className="text-xs text-muted-foreground line-through">{formatCurrency(p.virtualPrice)}</p>
-                      )}
-                    </div>
-                  </Link>
-                )
-              })}
+              {relatedProducts.map((p) => (
+                <ProductItem key={p.id} product={p} />
+              ))}
             </div>
           </CardContent>
         </Card>
 
         {/* Related Posts */}
-        <Card className="xl:col-span-4">
-          <CardHeader>
-            <CardTitle>Bài viết liên quan</CardTitle>
-            <CardDescription>Kiến thức và mẹo sử dụng giúp bạn chọn mua hiệu quả hơn.</CardDescription>
+        <Card className="xl:col-span-4 overflow-visible">
+          <CardHeader className="flex flex-row items-center justify-between gap-4 pb-5">
+            <div className="space-y-1">
+              <CardTitle className="text-lg sm:text-xl font-medium flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                <BookOpenIcon className="size-5 text-primary shrink-0" />
+                Bài viết liên quan
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm font-normal text-slate-500 dark:text-slate-400">
+                Kiến thức và mẹo sử dụng hiệu quả hơn.
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {RELATED_POSTS.map((post) => (
-                <article key={post.id} className="rounded-lg border p-4 transition-colors hover:border-primary/40">
-                  <p className="text-base font-semibold leading-6">{post.title}</p>
-                  <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{post.excerpt}</p>
-                  <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                <Link
+                  key={post.id}
+                  href={PATH.HOME}
+                  className="group block p-4 rounded-xl border border-slate-200/50 dark:border-zinc-800/80 bg-linear-to-b from-white/70 to-slate-50/50 dark:from-zinc-900/40 dark:to-zinc-950/20 shadow-2xs hover:shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30"
+                >
+                  <h4 className="line-clamp-2 text-sm font-medium leading-snug text-slate-800 dark:text-zinc-100 group-hover:text-primary transition-colors duration-200">
+                    {post.title}
+                  </h4>
+                  <p className="mt-1.5 line-clamp-2 text-xs text-slate-500 dark:text-zinc-400 font-normal leading-relaxed">
+                    {post.excerpt}
+                  </p>
+                  <div className="mt-3.5 pt-2 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between text-[11px] text-slate-400 dark:text-zinc-500 font-normal">
                     <span className="inline-flex items-center gap-1">
                       <Clock3Icon className="size-3.5" />
                       {post.readTime}
                     </span>
                     <span>{post.date}</span>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </CardContent>

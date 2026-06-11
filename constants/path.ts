@@ -5,6 +5,9 @@ const PATH = {
   CATEGORIES: '/categories',
   CATEGORY_DETAIL: (name: string, id: number) => `/categories/${generateNameId(name, id)}`,
   PRODUCT_DETAIL: (name: string, id: number) => `/products/${generateNameId(name, id)}`,
+  SELLERS: '/sellers',
+  SELLER_DETAIL: (name: string, id: number) => `/sellers/${generateNameId(name, id)}`,
+  LANDING_FLASH_SALE: '/landing/flash-sale',
 
   REGISTER: '/auth/register',
   LOGIN: '/auth/login',

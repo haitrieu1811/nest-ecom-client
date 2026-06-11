@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 
 import categoryApi from '@/apis/category.api'
 import { productApi } from '@/apis/product.api'
+import userApi from '@/apis/user.api'
 import FlashSale from '@/app/(shop)/_components/flash-sale'
 import HomeCarousel from '@/app/(shop)/_components/home-carousel'
 import HomeCategories from '@/app/(shop)/_components/home-categories'
@@ -14,7 +15,11 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const [getCategoriesRes, getProductsRes] = await Promise.all([categoryApi.getList(), productApi.getList()])
+  const [getCategoriesRes, getProductsRes] = await Promise.all([
+    categoryApi.getList(),
+    productApi.getList(),
+    userApi.getSellers({ page: 1, limit: 8 }),
+  ])
   const categories = getCategoriesRes.payload.data
   const products = getProductsRes.payload.data
 
