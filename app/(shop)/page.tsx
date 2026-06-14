@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 
 import categoryApi from '@/apis/category.api'
 import { productApi } from '@/apis/product.api'
-import userApi from '@/apis/user.api'
+import { userApi } from '@/apis/user.api'
 import FlashSale from '@/app/(shop)/_components/flash-sale'
 import HomeCarousel from '@/app/(shop)/_components/home-carousel'
 import HomeCategories from '@/app/(shop)/_components/home-categories'

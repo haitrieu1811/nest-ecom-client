@@ -5,7 +5,7 @@ import { PlusCircleIcon } from 'lucide-react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 
-import userApi from '@/apis/user.api'
+import { manageUserApi } from '@/apis/user.api'
 import { userColumns } from '@/app/(dashboard)/dashboard/users/columns'
 import CreateUserForm from '@/app/(dashboard)/dashboard/users/create-user-form'
 import AlertDialogDestructive from '@/components/alert-dialog-destructive'
@@ -69,7 +69,7 @@ export default function UsersTable() {
   const getAllUsersQuery = useQuery({
     queryKey: ['get-all-users', page, limit, emailDebounced],
     queryFn: () =>
-      userApi.getAll({
+      manageUserApi.getAll({
         page: Number(page),
         limit: Number(limit),
         email: emailDebounced,

@@ -6,7 +6,7 @@ import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import userApi from '@/apis/user.api'
+import { manageUserApi } from '@/apis/user.api'
 import InputAvatar from '@/components/input-avatar'
 import InputPassword from '@/components/input-password'
 import { Button } from '@/components/ui/button'
@@ -41,7 +41,7 @@ export default function CreateUserForm({ userData, onCreateSuccess, onUpdateSucc
 
   const createUserMutation = useMutation({
     mutationKey: ['create-user'],
-    mutationFn: userApi.create,
+    mutationFn: manageUserApi.create,
     onSuccess: (data) => {
       toast.success('Tạo người dùng thành công')
       form.reset()
@@ -61,7 +61,7 @@ export default function CreateUserForm({ userData, onCreateSuccess, onUpdateSucc
 
   const updateUserMutation = useMutation({
     mutationKey: ['update-user'],
-    mutationFn: userApi.update,
+    mutationFn: manageUserApi.update,
     onSuccess: (data) => {
       toast.success('Cập nhật người dùng thành công')
       form.reset()

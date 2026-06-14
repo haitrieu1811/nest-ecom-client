@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { vi } from 'date-fns/locale'
 import { EllipsisIcon, LanguagesIcon, PlusCircleIcon } from 'lucide-react'
 import React from 'react'

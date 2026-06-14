@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { vi } from 'date-fns/locale'
 import { Trash2Icon } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'

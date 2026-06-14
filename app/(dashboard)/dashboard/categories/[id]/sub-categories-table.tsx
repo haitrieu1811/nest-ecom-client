@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { vi } from 'date-fns/locale/vi'
 import { EllipsisIcon, PlusCircleIcon, TagsIcon } from 'lucide-react'
 import Link from 'next/link'

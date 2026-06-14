@@ -1,13 +1,13 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { vi } from 'date-fns/locale/vi'
 import { ChevronLeftIcon, Trash2Icon, UserRoundIcon } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import React from 'react'
 
-import userApi from '@/apis/user.api'
+import { manageUserApi } from '@/apis/user.api'
 import CreateUserForm from '@/app/(dashboard)/dashboard/users/create-user-form'
 import AlertDialogDestructive from '@/components/alert-dialog-destructive'
 import Loading from '@/components/loading'
@@ -32,7 +32,7 @@ export default function UserDetail() {
 
   const getUserDetailQuery = useQuery({
     queryKey: ['get-user-detail', userId],
-    queryFn: () => userApi.getDetail(Number(userId)),
+    queryFn: () => manageUserApi.getDetail(Number(userId)),
     enabled: Number.isInteger(Number(userId)),
   })
 

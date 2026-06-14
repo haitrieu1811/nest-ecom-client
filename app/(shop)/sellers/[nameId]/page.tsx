@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import categoryApi from '@/apis/category.api'
-import userApi from '@/apis/user.api'
+import { userApi } from '@/apis/user.api'
 import { extractIdFromNameId } from '@/lib/utils'
 import SellerDetail from '@/app/(shop)/sellers/[nameId]/seller-detail'
 

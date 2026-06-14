@@ -3,7 +3,7 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { vi } from 'date-fns/locale'
 import { MoreHorizontal } from 'lucide-react'
 
